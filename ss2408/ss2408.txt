@@ -1,0 +1,5 @@
+Input = output2
+WindowProcessing = True
+WindowLevel = 100
+WindowWidth = 400
+ViewAngle = 0 0 0
