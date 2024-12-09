@@ -1,8 +1,10 @@
 #include "path.h"
+
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
 
+// テキストファイルの読み込み
 void Path::load_text_file(const std::string& filepath) {
     std::ifstream file(filepath);
     if (!file.is_open()) {
@@ -23,6 +25,7 @@ void Path::load_text_file(const std::string& filepath) {
     file.close();
 }
 
+// MHDファイルの読み込み
 void Path::load_mhd_file(const std::string& filepath) {
     std::ifstream file(filepath);
     if (!file.is_open()) {
@@ -46,6 +49,15 @@ void Path::load_mhd_file(const std::string& filepath) {
                 _mhd_info["DimSizeX"] = x;
                 _mhd_info["DimSizeY"] = y;
                 _mhd_info["DimSizeZ"] = z;
+            }
+            if (key == "ElementSpacing") {
+                _mhd_info["ElementSpacing"] = value;
+                std::istringstream dim_stream(value);
+                std::string x, y, z;
+                dim_stream >> x >> y >> z;
+                _mhd_info["ElementSpacingX"] = x;
+                _mhd_info["ElementSpacingY"] = y;
+                _mhd_info["ElementSpacingZ"] = z;
             } else {
                 _mhd_info[key] = value;
             }
@@ -54,6 +66,7 @@ void Path::load_mhd_file(const std::string& filepath) {
     file.close();
 }
 
+// RAWファイルの読み込み
 std::vector<unsigned char> Path::load_raw_file(const std::string& filepath, size_t size) {
     std::ifstream file(filepath, std::ios::binary);
     if (!file.is_open()) {
@@ -69,15 +82,15 @@ std::vector<unsigned char> Path::load_raw_file(const std::string& filepath, size
     std::vector<unsigned char> data(size);
     if (!file.read(reinterpret_cast<char*>(data.data()), size)) {
         throw std::runtime_error(
-            "RAWファイルの読み込みに失敗しました: " + filepath + 
-            "\n要求サイズ: " + std::to_string(size) + 
-            " bytes\nファイルサイズ: " + std::to_string(file_size) + " bytes"
-        );
+            "RAWファイルの読み込みに失敗しました.RAWファイルがMET_UNCHAR型であることを確認して下さい.: " + filepath +
+            "\n要求サイズ: " + std::to_string(size) + " bytes\nファイルサイズ: " + std::to_string(file_size) +
+            " bytes");
     }
     file.close();
     return data;
 }
 
+// RAWファイルの保存
 void Path::save_raw_file(const std::string& filepath, const std::vector<unsigned char>& data) {
     std::ofstream file(filepath, std::ios::binary);
     if (!file.is_open()) {
@@ -90,29 +103,34 @@ void Path::save_raw_file(const std::string& filepath, const std::vector<unsigned
     file.close();
 }
 
+// MHDファイルの保存
 void Path::save_mhd_file(const std::string& filepath, const std::map<std::string, std::string>& mhd_info) {
-    auto updated_info = mhd_info;
-    
-    // 2D画像用にMHD情報を更新
-    updated_info["DimSizeZ"] = "1";  // Z方向を1枚に
-    updated_info["DimSize"] = updated_info["DimSizeX"] + " " + 
-                             updated_info["DimSizeY"] + " 1";
-
     std::ofstream file(filepath);
     if (!file.is_open()) {
         throw std::runtime_error("MHDファイル: " + filepath + " が作成できません");
     }
 
-    for (const auto& [key, value] : updated_info) {
-        file << key << " = " << value << std::endl;
+    for (const auto& kv : mhd_info) {
+        if (kv.first == "DimSizeX" || kv.first == "DimSizeY" || kv.first == "DimSizeZ" || kv.first == "DimSize" ||
+            kv.first == "ElementSpacingX" || kv.first == "ElementSpacingY" || kv.first == "ElementSpacingZ" ||
+            kv.first == "ElementSpacing") {
+            continue;  // DimSizeとElementSpacingは後で記述
+        }
+        file << kv.first << " = " << kv.second << "\n";
     }
+
+    // DimSizeとElementSpacingを記述
+    file << "DimSize = " << mhd_info.at("DimSize");
+
     file.close();
 }
 
+// MHD情報の取得
 const std::map<std::string, std::string>& Path::get_mhd_info() const {
     return _mhd_info;
 }
 
+// テキスト情報の取得
 const std::map<std::string, std::string>& Path::get_text_info() const {
     return _text_info;
 }

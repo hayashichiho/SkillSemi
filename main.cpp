@@ -1,60 +1,86 @@
-#include "path.h"
-#include "mip.h"
+#include <cmath>
+#include <filesystem>
 #include <iostream>
-#include <vector>
 #include <map>
 #include <string>
-#include <filesystem>
-#include <cmath>
+#include <vector>
 
-int main(int argc, char *argv[])
-{
-    if (argc < 4)
-    {
-        std::cerr << "Usage: " << argv[0] << " <input.mhd> <output.mhd> <text.txt>" << std::endl;
-        return 1;
+#include "mip.h"
+#include "path.h"
+
+int main(int argc, char* argv[]) {
+    if (argc != 3) {
+        std::cerr << "使用方法: " << argv[0] << " <出力ファイル> <入力テキストファイル>" << std::endl;
+        return EXIT_FAILURE;
     }
 
-    std::string input_mhd = argv[1];
-    std::string output_mhd = argv[2];
-    std::string text_file = argv[3];
+    const std::string output = argv[1];     // 出力ファイル
+    const std::string text_file = argv[2];  // 入力テキストファイル
 
-    try
-    {
+    try {
         Path path;
 
         // テキストファイルの読み込み
         path.load_text_file(text_file);
-        const auto &text_info = path.get_text_info();
+        const auto& text_info = path.get_text_info();
+        std::string mhd_file_name = text_info.at("Input") + ".mhd";
+        std::string raw_file_name = text_info.at("Input") + ".raw";
+
+        // ファイルパスの取得
+        std::string dir_path = text_file;
+        dir_path = dir_path.substr(0, dir_path.find_last_of('/') + 1);
+        if (dir_path.empty()) {
+            throw std::runtime_error("ディレクトリパスが取得できません");
+        }
+        std::string mhd_file = dir_path + mhd_file_name;
+        std::string raw_file = dir_path + raw_file_name;
 
         // MHDファイルの読み込み
-        path.load_mhd_file(input_mhd);
-        const auto &mhd_info = path.get_mhd_info();
+        path.load_mhd_file(mhd_file);
+        const auto& mhd_info = path.get_mhd_info();
+
+        // 画像サイズの取得
+        const int width = std::stoi(mhd_info.at("DimSizeX"));
+        const int height = std::stoi(mhd_info.at("DimSizeY"));
+        const int depth = std::stoi(mhd_info.at("DimSizeZ"));
+        const double ElementSpacingX = std::stod(mhd_info.at("ElementSpacingX"));
+        const double ElementSpacingY = std::stod(mhd_info.at("ElementSpacingY"));
+        const double ElementSpacingZ = std::stod(mhd_info.at("ElementSpacingZ"));
+        std::map<std::string, double> spacing;
+        spacing["ElementSpacingX"] = ElementSpacingX;
+        spacing["ElementSpacingY"] = ElementSpacingY;
+        spacing["ElementSpacingZ"] = ElementSpacingZ;
+        const size_t data_size = width * height * depth;
 
         // RAWデータの読み込み
-        size_t size = std::stoi(mhd_info.at("DimSizeX")) *
-                      std::stoi(mhd_info.at("DimSizeY")) *
-                      std::stoi(mhd_info.at("DimSizeZ"));
-        std::string raw_file = std::filesystem::path(input_mhd).replace_extension(".raw").string();
-        std::vector<unsigned char> raw_data = path.load_raw_file(raw_file, size);
+        if (raw_file.empty()) {
+            throw std::runtime_error("RAWファイルが指定されていません");
+        }
+        std::vector<unsigned char> raw_data = path.load_raw_file(raw_file, data_size);
 
-        EulerAngles angles(0, 60, 0);
+        // MIP画像の生成パラメータ設定
+        constexpr double phi = 180;  // X軸周りの回転角
+        constexpr double theta = 0;  // Y軸周りの回転角
+        constexpr double psi = 0;    // Z軸周りの回転角
+        const EulerAngles angles(phi, theta, psi);
 
-        // MIP画像を生成
-        int width = std::stoi(mhd_info.at("DimSizeX"));
-        int height = std::stoi(mhd_info.at("DimSizeY"));
-        int depth = std::stoi(mhd_info.at("DimSizeZ"));
-        std::vector<unsigned char> mip_image = generate_mip_image(raw_data, width, height, depth, angles);
+        // MIP画像の生成
+        std::vector<unsigned char> mip_image =
+            EulerAngles::generate_mip_image(raw_data, width, height, depth, angles, spacing);
 
         // 結果の保存
-        path.save_raw_file(std::filesystem::path(output_mhd).replace_extension(".raw").string(), mip_image);
-        path.save_mhd_file(output_mhd, mhd_info);
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << "Error: " << e.what() << std::endl;
-        return 1;
-    }
+        path.save_raw_file(output + ".raw", mip_image);
 
-    return 0;
+        auto new_mhd_info = mhd_info;  // 新しいmapを作成
+        const int mip_size = std::sqrt(mip_image.size());
+        new_mhd_info["DimSize"] = std::to_string(mip_size) + " " + std::to_string(mip_size) + " 1";
+        new_mhd_info["ElementDataFile"] = output + ".raw";
+        path.save_mhd_file(output + ".mhd", new_mhd_info);
+
+        return EXIT_SUCCESS;
+
+    } catch (const std::exception& e) {
+        std::cerr << "エラー: " << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
 }
