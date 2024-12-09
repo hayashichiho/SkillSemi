@@ -1,10 +1,6 @@
-DimSize = 512 512 1
-DimSizeX = 512
-DimSizeY = 512
-DimSizeZ = 1
 ElementByteOrderMSB = False
-ElementDataFile = output2.raw
-ElementSpacing = 0.946 0.946 2.0
+ElementDataFile = /home/hayashi/SkillSemi2024/ss2408/output2_output.raw
 ElementType = MET_UCHAR
 NDims = 3
 ObjectType = Image
+DimSize = 512 512 1
