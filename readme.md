@@ -78,17 +78,17 @@ classDiagram
 
 ### WindowParametersクラス
 ```mermaid
-classDiagram
-    class WindowParameters {
-        -bool _processing
-        -int _level
-        -int _width
-        +WindowParameters(bool processing, int level, int width)
-        +get_processing()
-        +get_level()
-        +get_width()
-        +apply_window_processing(vector<uchar> image_data)
-    }
+    classDiagram
+        class WindowParameters {
+            -bool _processing
+            -int _level
+            -int _width
+            +WindowParameters(bool processing, int level, int width)
+            +get_processing()
+            +get_level()
+            +get_width()
+            +apply_window_processing(vector<uchar> image_data)
+        }
 ```
 
 ### EulerAnglesクラス
