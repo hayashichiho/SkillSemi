@@ -65,7 +65,9 @@ classDiagram
         +get_mhd_info()
         +get_text_info()
     }
-
+```
+```mermaid
+classDiagram
     class WindowParameters {
         -bool _processing
         -int _level
@@ -76,6 +78,10 @@ classDiagram
         +get_width()
         +apply_window_processing(vector<uchar> image_data)
     }
+```
+```mermaid
+classDiagram
+
 
     class EulerAngles {
         -double _phi
