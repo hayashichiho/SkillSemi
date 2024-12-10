@@ -18,6 +18,7 @@ set(SOURCES
     main.cpp
     mip.cpp
     path.cpp
+    window_parameters.cpp
 )
 
 # 実行ファイルの設定

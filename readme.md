@@ -43,7 +43,8 @@ ViewAngle = phi theta psi
 ## ファイル構成
 - `main.cpp`: メインプログラム
 - `path.h/cpp`: ファイル入出力処理
-- `mip.h/cpp`: MIP画像生成とウィンドウ処理
+- `mip.h/cpp`: MIP画像生成
+- `window_parameters.h/cpp`: ウィンドウ処理
 - `CMakeLists.txt`: ビルド設定
 - `ss2408.txt`: MIP画像の情報を記載したテキストファイル
 - `××.mhd`: ss2408.txtのInputキーに記載されていたファイル名のMHDファイル
@@ -86,7 +87,6 @@ classDiagram
         +get_psi()
         +generate_mip_image(vector<uchar> raw_data, int width, int height, int depth, EulerAngles angles, map<string,double> spacing, WindowParameters window_params)
     }
-
 ```
 
 ## 高速化のための工夫

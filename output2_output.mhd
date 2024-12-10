@@ -1,5 +1,5 @@
 ElementByteOrderMSB = False
-ElementDataFile = /home/hayashi/SkillSemi2024/ss2408/output2_output.raw
+ElementDataFile = /home/hayashi/SkillSemi2024/ss2408/output2_output
 ElementType = MET_UCHAR
 NDims = 3
 ObjectType = Image

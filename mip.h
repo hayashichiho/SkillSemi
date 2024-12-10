@@ -1,32 +1,12 @@
 #pragma once
-
+#pragma once
 #include <map>
 #include <string>
 #include <vector>
 
-class WindowParameters {
-   private:
-    bool _processing;  // ウィンドウ処理の有無
-    int _level;        // ウィンドウレベル
-    int _width;        // ウィンドウ幅
+#include "window_parameters.h"
 
-   public:
-    WindowParameters(bool processing, int level, int width)
-        : _processing(processing), _level(level), _width(width) {}  // コンストラクタ
-
-    bool get_processing() const {
-        return _processing;
-    }
-    int get_level() const {
-        return _level;
-    }
-    int get_width() const {
-        return _width;
-    }
-
-    void apply_window_processing(std::vector<unsigned char>& image_data) const;  // ウィンドウ処理の適用
-};
-
+// オブジェクトの回転角度
 class EulerAngles {
    private:
     double _phi;    // X軸周りの回転角

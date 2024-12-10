@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 
+// パス情報の管理
 class Path {
    public:
     void load_text_file(const std::string& filepath);  // テキストファイルの読み込み
