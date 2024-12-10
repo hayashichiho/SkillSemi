@@ -58,9 +58,7 @@ ViewAngle = phi theta psi
 ### 2. 計算の効率化
 球面判定により不要な計算の省略
 
-
-### Pathクラス構造
-
+## クラス構造
 ```mermaid
 classDiagram
     class Path {
@@ -74,11 +72,6 @@ classDiagram
         +get_mhd_info()
         +get_text_info()
     }
-```
-### WindowParametersクラス構造
-
-```mermaid
-classDiagram
     class WindowParameters {
         -bool _processing
         -int _level
@@ -89,11 +82,6 @@ classDiagram
         +get_width()
         +apply_window_processing(vector~uchar~)
     }
-```
-
-### EulerAnglesクラス構造
-```mermaid
-classDiagram
     class EulerAngles {
         -double _phi
         -double _theta
@@ -103,18 +91,5 @@ classDiagram
         +get_theta()
         +get_psi()
         +generate_mip_image()
-    }
-```
-```mermaid
-classDiagram
-    class ImageProcessing {
-        - string filter_type : フィルタの種類
-        - int kernel_size : カーネルサイズ
-    }
-
-    class Path {
-        - map<string, string> mhd_info : MHDファイルの情報
-        - vector<string> parameters : テキストファイルの情報
-        - string input_mhd_file : MHDファイルのパス
     }
 ```
