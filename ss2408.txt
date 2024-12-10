@@ -1,5 +1,5 @@
-Input = output2
-WindowProcessing = True
+Input = ChestCT2
+WindowProcessing = true
 WindowLevel = 100
 WindowWidth = 400
-ViewAngle = 0 0 0
+ViewAngle = 122280 122280 1000000

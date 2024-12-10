@@ -1,3 +1,5 @@
+#include <omp.h>
+
 #include <cmath>
 #include <filesystem>
 #include <iostream>
@@ -9,6 +11,8 @@
 #include "path.h"
 
 int main(int argc, char* argv[]) {
+    double start_time = omp_get_wtime();
+
     if (argc != 3) {
         std::cerr << "使用方法: " << argv[0] << " <出力ファイル> <入力テキストファイル>" << std::endl;
         return EXIT_FAILURE;
@@ -58,15 +62,22 @@ int main(int argc, char* argv[]) {
         }
         std::vector<unsigned char> raw_data = path.load_raw_file(raw_file, data_size);
 
-        // MIP画像の生成パラメータ設定
-        constexpr double phi = 180;  // X軸周りの回転角
-        constexpr double theta = 0;  // Y軸周りの回転角
-        constexpr double psi = 0;    // Z軸周りの回転角
+        // MIP画像の角度を取得
+        const double phi = std::stod(text_info.at("Phi"));
+        const double theta = std::stod(text_info.at("Theta"));
+        const double psi = std::stod(text_info.at("Psi"));
         const EulerAngles angles(phi, theta, psi);
+
+        // WindowParametersの設定
+        WindowParameters window_params(false, 0, 0);  // デフォルト値で初期化
+        if (text_info.at("WindowProcessing") == "True") {
+            window_params =
+                WindowParameters(true, std::stoi(text_info.at("WindowLevel")), std::stoi(text_info.at("WindowWidth")));
+        }
 
         // MIP画像の生成
         std::vector<unsigned char> mip_image =
-            EulerAngles::generate_mip_image(raw_data, width, height, depth, angles, spacing);
+            EulerAngles::generate_mip_image(raw_data, width, height, depth, angles, spacing, window_params);
 
         // 結果の保存
         path.save_raw_file(output + ".raw", mip_image);
@@ -74,9 +85,12 @@ int main(int argc, char* argv[]) {
         auto new_mhd_info = mhd_info;  // 新しいmapを作成
         const int mip_size = std::sqrt(mip_image.size());
         new_mhd_info["DimSize"] = std::to_string(mip_size) + " " + std::to_string(mip_size) + " 1";
-        new_mhd_info["ElementDataFile"] = output + ".raw";
+        new_mhd_info["ElementDataFile"] = output;
+        new_mhd_info["ElementType"] = "MET_UCHAR";
         path.save_mhd_file(output + ".mhd", new_mhd_info);
 
+        double end_time = omp_get_wtime();
+        std::cout << "処理時間: " << end_time - start_time << "秒" << std::endl;
         return EXIT_SUCCESS;
 
     } catch (const std::exception& e) {
