@@ -50,6 +50,15 @@ ViewAngle = phi theta psi
 - `××.mhd`: ss2408.txtのInputキーに記載されていたファイル名のMHDファイル
 - `××.raw`: ss2408.txtのInputキーに記載されていたファイル名のRAWファイル
 
+## 高速化のための工夫
+### 1. OpenMPによる並列処理
+- MIP画像生成時の投影処理を並列化
+- ウィンドウ処理を並列化
+
+### 2. 計算の効率化
+球面判定により不要な計算の省略
+
+
 ## クラス図
 
 ```mermaid
@@ -65,9 +74,7 @@ classDiagram
         +get_mhd_info()
         +get_text_info()
     }
-```
-```mermaid
-classDiagram
+
     class WindowParameters {
         -bool _processing
         -int _level
@@ -78,10 +85,6 @@ classDiagram
         +get_width()
         +apply_window_processing(vector<uchar> image_data)
     }
-```
-```mermaid
-classDiagram
-
 
     class EulerAngles {
         -double _phi
@@ -94,13 +97,4 @@ classDiagram
         +generate_mip_image(vector<uchar> raw_data, int width, int height, int depth, EulerAngles angles, map<string,double> spacing, WindowParameters window_params)
     }
 ```
-
-## 高速化のための工夫
-
-### 1. OpenMPによる並列処理
-- MIP画像生成時の投影処理を並列化
-- ウィンドウ処理を並列化
-
-### 2. 計算の効率化
-球面判定により不要な計算の省略
 
