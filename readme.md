@@ -105,3 +105,16 @@ classDiagram
         +generate_mip_image()
     }
 ```
+```mermaid
+classDiagram
+    class ImageProcessing {
+        - string filter_type : フィルタの種類
+        - int kernel_size : カーネルサイズ
+    }
+
+    class Path {
+        - map<string, string> mhd_info : MHDファイルの情報
+        - vector<string> parameters : テキストファイルの情報
+        - string input_mhd_file : MHDファイルのパス
+    }
+```
