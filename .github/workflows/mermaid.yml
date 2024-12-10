@@ -1,0 +1,16 @@
+# .github/workflows/mermaid.yml
+name: Mermaid Diagrams
+on:
+  push:
+    paths:
+      - '**/*.md'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install mermaid
+        run: npm install -g @mermaid-js/mermaid-cli
+      - name: Generate diagrams
+        run: mmdc -i "README.md" -o "diagrams.png"

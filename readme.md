@@ -59,50 +59,41 @@ ViewAngle = phi theta psi
 球面判定により不要な計算の省略
 
 
-## クラス図
-### Pathクラス
+## クラス構造
+
 ```mermaid
 classDiagram
     class Path {
-        -map<string, string> _mhd_info
-        -map<string, string> _text_info
+        -map<string,string> _mhd_info
+        -map<string,string> _text_info
         +load_text_file(string filepath)
         +load_mhd_file(string filepath)
         +load_raw_file(string filepath, size_t size)
-        +save_raw_file(string filepath, vector<uchar> data)
+        +save_raw_file(string filepath, vector~uchar~ data)
         +save_mhd_file(string filepath, map<string,string> mhd_info)
         +get_mhd_info()
         +get_text_info()
     }
-```
 
-### WindowParametersクラス
-```mermaid
-    classDiagram
-        class WindowParameters {
-            -bool _processing
-            -int _level
-            -int _width
-            +WindowParameters(bool processing, int level, int width)
-            +get_processing()
-            +get_level()
-            +get_width()
-            +apply_window_processing(vector<uchar> image_data)
-        }
-```
+    class WindowParameters {
+        -bool _processing
+        -int _level
+        -int _width
+        +WindowParameters(bool, int, int)
+        +get_processing()
+        +get_level()
+        +get_width()
+        +apply_window_processing(vector~uchar~)
+    }
 
-### EulerAnglesクラス
-```mermaid
-classDiagram
     class EulerAngles {
         -double _phi
         -double _theta
         -double _psi
-        +EulerAngles(double p, double t, double s)
+        +EulerAngles(double, double, double)
         +get_phi()
         +get_theta()
         +get_psi()
-        +generate_mip_image(vector<uchar> raw_data, int width, int height, int depth, EulerAngles angles, map<string,double> spacing, WindowParameters window_params)
+        +generate_mip_image()
     }
-```
 
