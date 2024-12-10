@@ -60,7 +60,7 @@ ViewAngle = phi theta psi
 
 
 ## クラス図
-
+### Pathクラス
 ```mermaid
 classDiagram
     class Path {
@@ -74,7 +74,11 @@ classDiagram
         +get_mhd_info()
         +get_text_info()
     }
+```
 
+### WindowParametersクラス
+```mermaid
+classDiagram
     class WindowParameters {
         -bool _processing
         -int _level
@@ -85,7 +89,11 @@ classDiagram
         +get_width()
         +apply_window_processing(vector<uchar> image_data)
     }
+```
 
+### EulerAnglesクラス
+```mermaid
+classDiagram
     class EulerAngles {
         -double _phi
         -double _theta
