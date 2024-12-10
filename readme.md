@@ -59,7 +59,7 @@ ViewAngle = phi theta psi
 球面判定により不要な計算の省略
 
 
-## Pathクラス構造
+### Pathクラス構造
 
 ```mermaid
 classDiagram
@@ -75,7 +75,7 @@ classDiagram
         +get_text_info()
     }
 ```
-## WindowParametersクラス構造
+### WindowParametersクラス構造
 
 ```mermaid
 classDiagram
@@ -91,7 +91,7 @@ classDiagram
     }
 ```
 
-## EulerAnglesクラス構造
+### EulerAnglesクラス構造
 ```mermaid
 classDiagram
     class EulerAngles {
