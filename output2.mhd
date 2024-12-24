@@ -1,0 +1,7 @@
+ObjectType = Image
+NDims = 3
+DimSize = 512 512 155
+ElementType = MET_UCHAR
+ElementSpacing = 0.946 0.946 2.0
+ElementByteOrderMSB = False
+ElementDataFile = output2.raw
