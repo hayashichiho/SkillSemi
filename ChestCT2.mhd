@@ -1,7 +1,0 @@
-ObjectType = Image
-NDims = 3
-DimSize = 512 512 155
-ElementType = MET_SHORT
-ElementSpacing = 0.946000 0.946000 2.000000
-ElementByteOrderMSB = False
-ElementDataFile = ChestCT.raw
