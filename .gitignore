@@ -378,3 +378,8 @@ FodyWeavers.xsd
 *.hdr
 *.img
 *.img.gz
+*.ico
+*.Identifier
+*.sln
+*.resx
+*.config
