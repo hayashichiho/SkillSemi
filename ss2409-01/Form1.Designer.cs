@@ -310,10 +310,10 @@
         private System.Windows.Forms.Button measureButton;
         private System.Windows.Forms.Label measureLabel;
         private System.Windows.Forms.Label mmLabel;
-        private System.Windows.Forms.TextBox mmTextBox;
         private System.Windows.Forms.Button cameraButton2;
         public System.Windows.Forms.PictureBox cameraPictureBox1;
         public System.Windows.Forms.PictureBox cameraPictureBox2;
+        public System.Windows.Forms.TextBox mmTextBox;
     }
 }
 

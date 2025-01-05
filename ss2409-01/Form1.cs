@@ -26,6 +26,7 @@ namespace ss2409_01
         private readonly Calibration _calibration; // キャリブレーションインスタンス
         private readonly LoadData _loadData; // データ読み込みインスタンス
         private readonly Measure _measure; // 計測インスタンス
+        private readonly Aruco _aruco; // ArUcoインスタンス
         private Mat _savedCameraMatrix;
         private Mat _savedDistCoeffs;
 
@@ -37,6 +38,7 @@ namespace ss2409_01
             _calibration = new Calibration(this);
             _loadData = new LoadData(this);
             _measure = new Measure(this);
+            _aruco = new Aruco(this);
             this.FormClosing += new FormClosingEventHandler(Form1_FormClosing);
 
             _isCameraConnectedPage1 = false; // カメラ接続フラグをオフにする（ページ1）
@@ -61,6 +63,10 @@ namespace ss2409_01
 
         // キャリブレーションプロパティ
         public Calibration Calibration => _calibration;
+
+        public Measure Measure => _measure;
+
+        public Aruco Aruco => _aruco;
 
         // ステータスラベル1を更新するメソッド
         public void UpdateStatusLabel1(string text)
@@ -308,7 +314,7 @@ namespace ss2409_01
         }
 
         // カメラ接続処理を行うメソッド
-        private void ConnectCamera(int cameraIndex, int buttonNumber)
+        public void ConnectCamera(int cameraIndex, int buttonNumber)
         {
             string selectedCamera = null;
             this.Invoke((MethodInvoker)delegate
@@ -664,19 +670,62 @@ namespace ss2409_01
         // measureButton のクリックイベントハンドラ
         private void MeasureButton_Click(object sender, EventArgs e)
         {
-            var measureThread = new Thread(() =>
+            // 計測処理を実行
+            int cameraIndex = 0;
+            this.Invoke((MethodInvoker)delegate
             {
-                // 計測処理を実行
-                var cameraIndex = cameraComboBox1.SelectedIndex;
-                var filePath = "CalibrationData.xml"; // 保存先のファイルパスを指定
+                if (_isCameraConnectedPage1)
+                {
+                    cameraIndex = cameraComboBox1.SelectedIndex;
+                }
+                else if (_isCameraConnectedPage2)
+                {
+                    cameraIndex = cameraComboBox2.SelectedIndex;
+                }
+            });
+
+            // ファイル保存ダイアログを表示
+            string filePath = null;
+            this.Invoke((MethodInvoker)delegate
+            {
+                using (var saveFileDialog = new SaveFileDialog
+                {
+                    Filter = "XML Files|*.xml",
+                    Title = "計測データの保存先を選択してください",
+                    FileName = "MeasurementData.xml"
+                })
+                {
+                    if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        filePath = saveFileDialog.FileName;
+                    }
+                }
+            });
+
+            if (string.IsNullOrEmpty(filePath))
+            {
+                this.Invoke((MethodInvoker)delegate
+                {
+                    UpdateStatusLabel1("保存先が選択されませんでした。");
+                    UpdateStatusLabel2("保存先が選択されませんでした。");
+                });
+                return;
+            }
+
+            this.Invoke((MethodInvoker)delegate
+            {
                 MeasureButtonEnabled(false);
                 CameraButton1Enabled(false);
                 CameraButton2Enabled(false);
                 LoadButtonEnabled(false);
                 CalibrationButtonEnabled(false);
-                _measure.PerformMeasurement(cameraIndex, filePath);
             });
-            measureThread.Start();
+
+            // マーカーの大きさを指定
+            float markerLength = 0.02f; // 2cmのマーカー
+
+            // MeasureクラスのPerformMeasurementメソッドを呼び出す
+            _measure.PerformMeasurement(cameraIndex, markerLength, filePath);
         }
     }
 }
