@@ -8,12 +8,16 @@ namespace ss2409_01
     public class Measure
     {
         private readonly Form1 _form;
-        private Thread _measurementThread;
+        public Thread _measurementThread;
         private bool _isMeasuring;
-        private bool _isSaved;
 
-        public bool IsMeasuring { get; set; }
-        public bool IsSaved { get; set; }
+        public bool IsMeasuring
+        {
+            get => _isMeasuring;
+            set => _isMeasuring = value;
+        }
+
+        public Thread Thread => _measurementThread;
 
         public Measure(Form1 form)
         {
@@ -22,6 +26,13 @@ namespace ss2409_01
 
         public void PerformMeasurement(int cameraIndex, float markerLength, string filePath)
         {
+            if (IsMeasuring)
+            {
+                _form.UpdateStatusLabel1("計測は既に実行中です．");
+                _form.UpdateStatusLabel2("計測は既に実行中です．");
+                return;
+            }
+
             _measurementThread = new Thread(() => MeasurementProcess(cameraIndex, markerLength, filePath));
             _measurementThread.Start();
         }
@@ -30,6 +41,7 @@ namespace ss2409_01
         {
             try
             {
+                IsMeasuring = true;
                 var aruco = new Aruco(_form);
                 Point2f rulerEndPoint = new Point2f(); // 初期化
                 Point2f markerTopLeft, markerTopRight, initialRulerEndPoint, movedRulerEndPoint;
@@ -39,7 +51,9 @@ namespace ss2409_01
                     // カメラに接続できない場合はエラーをスロー
                     if (!capture.IsOpened())
                     {
-                        _form.Invoke((MethodInvoker)delegate
+                        IsMeasuring = false;
+
+                        _form.SafeInvoke(() =>
                         {
                             _form.UpdateStatusLabel1("カメラに接続できませんでした．");
                             _form.UpdateStatusLabel2("カメラに接続できませんでした．");
@@ -50,6 +64,7 @@ namespace ss2409_01
                     // マーカーを検出して位置姿勢を推定
                     if (!aruco.DetectMarkerAndEstimatePose(capture, markerLength, _form.Calibration.CameraMatrix, _form.Calibration.DistCoeffs, out Point2f[] detectedCorners, out int detectedId, out Vec3d[] rvecs, out Vec3d[] tvecs))
                     {
+                        IsMeasuring = false;
                         return;
                     }
 
@@ -63,7 +78,7 @@ namespace ss2409_01
                     aruco.SaveMeasurementData(filePath, detectedCorners, detectedId, initialRulerEndPoint, true);
 
                     // 定規を移動させるためのメッセージを表示
-                    _form.Invoke((MethodInvoker)delegate
+                    _form.SafeInvoke(() =>
                     {
                         MessageBox.Show("定規を移動させてください。移動が完了したらOKを押してください。", "定規の移動", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     });
@@ -71,6 +86,7 @@ namespace ss2409_01
                     // 再度マーカーを検出して位置姿勢を推定
                     if (!aruco.DetectMarkerAndEstimatePose(capture, markerLength, _form.Calibration.CameraMatrix, _form.Calibration.DistCoeffs, out detectedCorners, out detectedId, out rvecs, out tvecs))
                     {
+                        IsMeasuring = false;
                         return;
                     }
 
@@ -90,9 +106,9 @@ namespace ss2409_01
                     aruco.SaveMeasurementData(filePath, detectedCorners, detectedId, rulerEndPoint, false);
 
                     // 結果をmmTextBoxに表示
-                    _form.Invoke((MethodInvoker)delegate
+                    _form.SafeInvoke(() =>
                     {
-                        _form.mmTextBox.Text = $"{totalDistance} mm"; // 距離をmmに変換して表示
+                        _form.mmTextBox.Text = $"{totalDistance}";
                         _form.UpdateStatusLabel1("計測データを保存しました。");
                         _form.UpdateStatusLabel2("計測データを保存しました。");
                     });
@@ -100,7 +116,9 @@ namespace ss2409_01
             }
             catch (Exception ex)
             {
-                _form.Invoke((MethodInvoker)delegate
+                IsMeasuring = false;
+
+                _form.SafeInvoke(() =>
                 {
                     _form.UpdateStatusLabel1($"計測中にエラーが発生しました: {ex.Message}");
                     _form.UpdateStatusLabel2($"計測中にエラーが発生しました: {ex.Message}");
@@ -109,7 +127,7 @@ namespace ss2409_01
             finally
             {
                 // スレッドの終了
-                _form.Invoke((MethodInvoker)delegate
+                _form.SafeInvoke(() =>
                 {
                     _form.CameraButton1Enabled(true);
                     _form.CameraButton2Enabled(true);
@@ -117,6 +135,9 @@ namespace ss2409_01
                     _form.LoadButtonEnabled(true);
                     _form.MeasureButtonEnabled(true);
                 });
+
+                Thread.Sleep(2000); // 1秒待機
+                _form.DisconnectCamera(); // カメラの切断
 
                 // フラグの更新
                 IsMeasuring = false;

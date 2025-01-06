@@ -1,10 +1,7 @@
-﻿using System.Windows.Forms;
-using OpenCvSharp;
+﻿using OpenCvSharp;
 using OpenCvSharp.Aruco;
 using System;
-using System.Threading;
 using System.Xml;
-using System.Runtime.InteropServices;
 
 namespace ss2409_01
 {
@@ -25,12 +22,6 @@ namespace ss2409_01
             out Vec3d[] rvecs,
             out Vec3d[] tvecs)
         {
-            // カメラ行列と歪み係数が存在しない場合はエラーをスロー
-            if (cameraMatrix.Empty() || distCoeffs.Empty())
-            {
-                throw new ArgumentException("キャリブレーションデータが存在しません．");
-            }
-
             // 回転ベクトルと並進ベクトルを取得
             using (var rvecsMat = new Mat()) // 回転ベクトル
             using (var tvecsMat = new Mat()) // 並進ベクトル

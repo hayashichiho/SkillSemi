@@ -27,8 +27,8 @@ namespace ss2409_01
         private readonly LoadData _loadData; // データ読み込みインスタンス
         private readonly Measure _measure; // 計測インスタンス
         private readonly Aruco _aruco; // ArUcoインスタンス
-        private Mat _savedCameraMatrix;
-        private Mat _savedDistCoeffs;
+        private Mat _savedCameraMatrix; // 保存されたカメラ行列
+        private Mat _savedDistCoeffs; // 保存された歪み係数
 
         public Form1()
         {
@@ -64,8 +64,10 @@ namespace ss2409_01
         // キャリブレーションプロパティ
         public Calibration Calibration => _calibration;
 
+        // 計測のプロパティ
         public Measure Measure => _measure;
 
+        // arucoマーカーについてのプロパティ
         public Aruco Aruco => _aruco;
 
         // ステータスラベル1を更新するメソッド
@@ -223,7 +225,7 @@ namespace ss2409_01
             }
         }
 
-        // カメラコンポーネントを初期化するメソッド
+        // カメラのリストを取得するメソッド
         private void InitializeCameraComponents()
         {
             var cameraThread = new Thread(() =>
@@ -396,7 +398,7 @@ namespace ss2409_01
                     if (!capture.IsOpened())
                     {
                         // カメラに接続できなかった場合はエラーメッセージを表示して処理を終了
-                        this.Invoke((MethodInvoker)delegate
+                        SafeInvoke(() =>
                         {
                             this.UpdateStatusLabel1("カメラに接続できませんでした．");
                             this.UpdateStatusLabel2("カメラに接続できませんでした．");
@@ -404,6 +406,7 @@ namespace ss2409_01
                             cameraComboBox2.Enabled = true;
                             calibrationButton.Enabled = false;
                             LoadButtonEnabled(false);
+                            MeasureButtonEnabled(false);
                             cameraButton1.Text = "カメラ接続";
                             cameraButton2.Text = "カメラ接続";
                         });
@@ -431,7 +434,7 @@ namespace ss2409_01
                                     processedFrame = _calibration.UndistortImage(frame);
                                 }
                                 var bitmap = BitmapConverter.ToBitmap(processedFrame);
-                                this.Invoke((MethodInvoker)delegate
+                                SafeInvoke(() =>
                                 {
                                     cameraPictureBox1.Image = bitmap;
                                     cameraPictureBox2.Image = bitmap;
@@ -444,7 +447,7 @@ namespace ss2409_01
             catch (AccessViolationException ex)
             {
                 // 例外が発生した場合の処理
-                this.Invoke((MethodInvoker)delegate
+                SafeInvoke(() =>
                 {
                     UpdateStatusLabel1($"カメラキャプチャ中にエラーが発生しました: {ex.Message}");
                     UpdateStatusLabel2($"カメラキャプチャ中にエラーが発生しました: {ex.Message}");
@@ -461,6 +464,22 @@ namespace ss2409_01
                         _capture.Dispose();
                         _capture = null;
                     }
+                }
+            }
+        }
+
+        // 安全にInvokeを実行するためのヘルパーメソッド
+        public void SafeInvoke(Action action)
+        {
+            if (this.IsHandleCreated && !this.IsDisposed && !this.Disposing)
+            {
+                try
+                {
+                    this.Invoke(action);
+                }
+                catch (ObjectDisposedException)
+                {
+                    // フォームが破棄されている場合は何もしない
                 }
             }
         }
@@ -516,19 +535,8 @@ namespace ss2409_01
                                 CameraButton2Enabled(false);
                                 LoadButtonEnabled(false);
                                 MeasureButtonEnabled(false);
-                                _calibration.PerformCalibration(cameraIndex, filePath);
 
-                                // キャリブレーションが終了した後にUIの状態を更新
-                                this.Invoke((MethodInvoker)delegate
-                                {
-                                    CalibrationButtonEnabled(true);
-                                    CameraButton1Enabled(true);
-                                    CameraButton2Enabled(true);
-                                    LoadButtonEnabled(true);
-                                    MeasureButtonEnabled(true);
-                                    UpdateStatusLabel1("キャリブレーションが完了しました");
-                                    UpdateStatusLabel2("キャリブレーションが完了しました");
-                                });
+                                _calibration.PerformCalibration(cameraIndex, filePath);
                             }
                             else
                             {
@@ -642,14 +650,16 @@ namespace ss2409_01
         // フォームが閉じられるときのイベントハンドラ
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            // カメラ接続フラグをオフにする
             _isCameraConnectedPage1 = false;
             _isCameraConnectedPage2 = false;
             _isCameraRunning = false;
+            _measure.IsMeasuring = false;
 
             // カメラスレッドの終了処理
             if (_cameraThread != null && _cameraThread.IsAlive)
             {
-                _cameraThread.Join();
+                _cameraThread.Join(1000);
             }
 
             // キャリブレーションスレッドの終了処理
@@ -658,18 +668,44 @@ namespace ss2409_01
                 _calibration.CancelCalibration();
             }
 
-            // リソースの解放
-            if (_capture != null && !_capture.IsDisposed)
+            // 計測スレッドの終了処理
+            if (_measure.IsMeasuring)
             {
-                _capture.Release();
-                _capture.Dispose();
-                _capture = null;
+                _measure.CancelMeasurement();
+            }
+
+            // リソースの解放
+            lock (this)
+            {
+                if (_capture != null && !_capture.IsDisposed)
+                {
+                    _capture.Release();
+                    _capture.Dispose();
+                    _capture = null;
+                }
+            }
+
+            // スレッドの終了を待機
+            Thread.Sleep(500);
+
+            // フォームのリソースを解放
+            if (components != null)
+            {
+                components.Dispose();
             }
         }
 
         // measureButton のクリックイベントハンドラ
         private void MeasureButton_Click(object sender, EventArgs e)
         {
+            // キャリブレーションデータが存在するか確認
+            if (!_calibration.IsCalibrated)
+            {
+                UpdateStatusLabel1("キャリブレーションデータが存在しません．データを読み込んでください");
+                UpdateStatusLabel2("キャリブレーションデータが存在しません．データを読み込んでください");
+                return;
+            }
+
             // 計測処理を実行
             int cameraIndex = 0;
             this.Invoke((MethodInvoker)delegate
@@ -702,6 +738,7 @@ namespace ss2409_01
                 }
             });
 
+            // ファイルパスが指定されていない場合はエラーメッセージを表示して処理を終了
             if (string.IsNullOrEmpty(filePath))
             {
                 this.Invoke((MethodInvoker)delegate
@@ -712,6 +749,7 @@ namespace ss2409_01
                 return;
             }
 
+            // UIコントロールの状態を更新
             this.Invoke((MethodInvoker)delegate
             {
                 MeasureButtonEnabled(false);

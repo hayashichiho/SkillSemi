@@ -226,11 +226,6 @@ namespace ss2409_01
 
                         // カメラパラメータを保存
                         IsCalibrated = true; // キャリブレーション完了フラグを設定
-                        _form.Invoke((MethodInvoker)delegate
-                        {
-                            _form.UpdateStatusLabel1("キャリブレーションが完了しました。");
-                            _form.UpdateStatusLabel2("キャリブレーションが完了しました。");
-                        });
 
                         // キャリブレーションデータを保存
                         SaveCalibrationData(filePath);
@@ -266,7 +261,6 @@ namespace ss2409_01
                             _form.MeasureButtonEnabled(true); // 計測ボタンを有効にする
                         });
                     }
-                    _form.DisconnectCamera(); // カメラを切断
                 }
             }
             catch (Exception ex)
@@ -334,8 +328,8 @@ namespace ss2409_01
             // キャリブレーションデータをXMLファイルに保存
             if (_isCancelled)
             {
-                _form.UpdateStatusLabel1("キャリブレーションが中止されました。");
-                _form.UpdateStatusLabel2("キャリブレーションが中止されました。");
+                _form.UpdateStatusLabel1("キャリブレーションが中止されました．");
+                _form.UpdateStatusLabel2("キャリブレーションが中止されました．");
                 return;
             }
 
@@ -343,7 +337,7 @@ namespace ss2409_01
             {
                 if (string.IsNullOrEmpty(filePath))
                 {
-                    throw new ArgumentException("ファイルパスが無効です。");
+                    throw new ArgumentException("ファイルパスが無効です．");
                 }
 
                 // ログにファイルパスを記録
@@ -352,7 +346,7 @@ namespace ss2409_01
                 // カメラ行列と歪み係数が初期化されているか確認
                 if (_cameraMatrix == null || _distCoeffs == null)
                 {
-                    throw new InvalidOperationException("カメラ行列または歪み係数が初期化されていません。");
+                    throw new InvalidOperationException("カメラ行列または歪み係数が初期化されていません．");
                 }
 
                 // XMLドキュメントを作成
@@ -391,8 +385,11 @@ namespace ss2409_01
                 // XMLファイルを保存
                 xmlDoc.Save(filePath);
 
-                _form.UpdateStatusLabel1("キャリブレーションデータを保存しました。");
-                _form.UpdateStatusLabel2("キャリブレーションデータを保存しました。");
+                _form.UpdateStatusLabel1("キャリブレーションデータを保存しました.計測ページからキャリブレーションデータを選択してください．");
+                _form.UpdateStatusLabel2("キャリブレーションデータを保存しました.計測ページからキャリブレーションデータを選択してください．");
+
+                Thread.Sleep(2000);
+                _form.DisconnectCamera();
             }
             catch (Exception ex)
             {
