@@ -382,4 +382,5 @@ FodyWeavers.xsd
 *.Identifier
 *.sln
 *.resx
-*.config
+*.config# ローカルの変更をスタッシュ
+git stash
