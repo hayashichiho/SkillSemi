@@ -26,6 +26,7 @@ namespace ss2409_01
 
         public void PerformMeasurement(int cameraIndex, float markerLength, string filePath)
         {
+            // 計測を実行するメソッド
             if (IsMeasuring)
             {
                 _form.UpdateStatusLabel1("計測は既に実行中です．");
@@ -39,12 +40,13 @@ namespace ss2409_01
 
         private void MeasurementProcess(int cameraIndex, float markerLength, string filePath)
         {
+            // 計測処理を行うメソッド
             try
             {
                 IsMeasuring = true;
                 var aruco = new Aruco(_form);
-                Point2f rulerEndPoint = new Point2f(); // 初期化
-                Point2f markerTopLeft, markerTopRight, initialRulerEndPoint, movedRulerEndPoint;
+                Point2f rulerEndPoint = new Point2f(); // 定規の先端の座標
+                Point2f markerTopLeft, markerTopRight, initialRulerEndPoint, movedRulerEndPoint; // マーカーの左上と右上，定規の先端の座標（初期値と移動後）
 
                 using (var capture = new VideoCapture(cameraIndex))
                 {
@@ -61,8 +63,8 @@ namespace ss2409_01
                         return;
                     }
 
-                    // マーカーを検出して位置姿勢を推定
-                    if (!aruco.DetectMarkerAndEstimatePose(capture, markerLength, _form.Calibration.CameraMatrix, _form.Calibration.DistCoeffs, out Point2f[] detectedCorners, out int detectedId, out Vec3d[] rvecs, out Vec3d[] tvecs))
+                    // マーカーを検出して位置を推定
+                    if (!aruco.DetectMarkerAndEstimatePose(capture, markerLength, _form.Calibration.CameraMatrix, _form.Calibration.DistCoeffs, out Point2f[] detectedCorners, out int detectedId))
                     {
                         IsMeasuring = false;
                         return;
@@ -84,7 +86,7 @@ namespace ss2409_01
                     });
 
                     // 再度マーカーを検出して位置姿勢を推定
-                    if (!aruco.DetectMarkerAndEstimatePose(capture, markerLength, _form.Calibration.CameraMatrix, _form.Calibration.DistCoeffs, out detectedCorners, out detectedId, out rvecs, out tvecs))
+                    if (!aruco.DetectMarkerAndEstimatePose(capture, markerLength, _form.Calibration.CameraMatrix, _form.Calibration.DistCoeffs, out detectedCorners, out detectedId))
                     {
                         IsMeasuring = false;
                         return;
@@ -146,6 +148,7 @@ namespace ss2409_01
 
         public void CancelMeasurement()
         {
+            // 計測をキャンセルするメソッド
             if (_measurementThread != null && _measurementThread.IsAlive)
             {
                 _measurementThread.Abort();

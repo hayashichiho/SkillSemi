@@ -409,7 +409,7 @@ namespace ss2409_01
             _applyCalibration = true; // キャリブレーションデータを適用する
 
             // デバッグ情報を追加
-            Console.WriteLine("Set Camera Matrix:");
+            Console.WriteLine("カメラ行列を読み込みました");
             for (int i = 0; i < _cameraMatrix.Rows; i++)
             {
                 for (int j = 0; j < _cameraMatrix.Cols; j++)
@@ -419,7 +419,7 @@ namespace ss2409_01
                 Console.WriteLine();
             }
 
-            Console.WriteLine("Set Dist Coeffs:");
+            Console.WriteLine("歪み係数を読み込みました");
             for (int i = 0; i < _distCoeffs.Rows; i++)
             {
                 Console.WriteLine(_distCoeffs.At<double>(i, 0));

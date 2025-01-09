@@ -468,7 +468,7 @@ namespace ss2409_01
             }
         }
 
-        // 安全にInvokeを実行するためのヘルパーメソッド
+        // 安全にInvokeを実行するためのメソッド
         public void SafeInvoke(Action action)
         {
             if (this.IsHandleCreated && !this.IsDisposed && !this.Disposing)

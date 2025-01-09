@@ -14,33 +14,10 @@ namespace ss2409_01
             _form = form;
         }
 
-        public static void EstimatePoseSingleMarkers(
-            Point2f[][] corners,
-            float markerLength,
-            Mat cameraMatrix,
-            Mat distCoeffs,
-            out Vec3d[] rvecs,
-            out Vec3d[] tvecs)
-        {
-            // 回転ベクトルと並進ベクトルを取得
-            using (var rvecsMat = new Mat()) // 回転ベクトル
-            using (var tvecsMat = new Mat()) // 並進ベクトル
-            {
-                // 位置姿勢を推定
-                CvAruco.EstimatePoseSingleMarkers(corners, markerLength, cameraMatrix, distCoeffs, OutputArray.Create(rvecsMat), OutputArray.Create(tvecsMat));
-
-                rvecs = new Vec3d[rvecsMat.Rows];
-                tvecs = new Vec3d[tvecsMat.Rows];
-                for (int i = 0; i < rvecsMat.Rows; i++)
-                {
-                    rvecs[i] = rvecsMat.At<Vec3d>(i);
-                    tvecs[i] = tvecsMat.At<Vec3d>(i);
-                }
-            }
-        }
-
         public static Point2f CalculateRulerEndPoint(Point2f markerTopLeft, Point2f markerTopRight, float distance, float markerLength)
         {
+            // 定規の先端の座標を計算するメソッド
+
             // マーカーの右上と左上の間のベクトルを計算
             var directionVector = new Point2f(
                 markerTopRight.X - markerTopLeft.X,
@@ -117,12 +94,11 @@ namespace ss2409_01
             }
         }
 
-        public bool DetectMarkerAndEstimatePose(VideoCapture capture, float markerLength, Mat cameraMatrix, Mat distCoeffs, out Point2f[] detectedCorners, out int detectedId, out Vec3d[] rvecs, out Vec3d[] tvecs)
+        public bool DetectMarkerAndEstimatePose(VideoCapture capture, float markerLength, Mat cameraMatrix, Mat distCoeffs, out Point2f[] detectedCorners, out int detectedId)
         {
+            // マーカーを検出して位置姿勢を推定するメソッド
             detectedCorners = null;
             detectedId = -1;
-            rvecs = null;
-            tvecs = null;
 
             while (true)
             {
@@ -150,8 +126,6 @@ namespace ss2409_01
                         detectedCorners = corners[0];
                         detectedId = ids[0];
 
-                        // 位置姿勢を推定
-                        EstimatePoseSingleMarkers(new Point2f[][] { detectedCorners }, markerLength, cameraMatrix, distCoeffs, out rvecs, out tvecs);
                         return true;
                     }
                 }

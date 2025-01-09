@@ -26,9 +26,10 @@ namespace ss2409_01
                 var xmlDoc = new XmlDocument();
                 xmlDoc.Load(filePath);
 
-                var cameraMatrixNode = xmlDoc.SelectSingleNode("//CameraMatrix");
-                var distCoeffsNode = xmlDoc.SelectSingleNode("//DistCoeffs");
+                var cameraMatrixNode = xmlDoc.SelectSingleNode("//CameraMatrix"); // XMLファイルからカメラ行列を取得
+                var distCoeffsNode = xmlDoc.SelectSingleNode("//DistCoeffs"); // XMLファイルから歪み係数を取得
 
+                // カメラ行列と歪み係数が取得できなかった場合は例外をスロー
                 if (cameraMatrixNode == null || distCoeffsNode == null)
                 {
                     throw new InvalidOperationException("キャリブレーションデータが正しくありません。");
@@ -37,6 +38,7 @@ namespace ss2409_01
                 var cameraMatrix = new Mat(3, 3, MatType.CV_64F);
                 var distCoeffs = new Mat(distCoeffsNode.ChildNodes.Count, 1, MatType.CV_64F);
 
+                // カメラ行列と歪み係数を読み込む
                 int i = 0;
                 foreach (XmlNode rowNode in cameraMatrixNode.ChildNodes)
                 {
@@ -57,7 +59,7 @@ namespace ss2409_01
                 }
 
                 // デバッグ情報を追加
-                Console.WriteLine("Loaded Camera Matrix:");
+                Console.WriteLine("カメラ行列を読み込みました");
                 for (i = 0; i < cameraMatrix.Rows; i++)
                 {
                     for (int j = 0; j < cameraMatrix.Cols; j++)
@@ -67,7 +69,7 @@ namespace ss2409_01
                     Console.WriteLine();
                 }
 
-                Console.WriteLine("Loaded Dist Coeffs:");
+                Console.WriteLine("歪み係数を読み込みました");
                 for (i = 0; i < distCoeffs.Rows; i++)
                 {
                     Console.WriteLine(distCoeffs.At<double>(i, 0));
