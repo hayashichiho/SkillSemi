@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Ports;
 using System.Threading;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 using OpenCvSharp;
 using OpenCvSharp.Extensions;
 
@@ -20,12 +21,15 @@ namespace ss2410
         private SerialPort _serialPort; // シリアルポートオブジェクト
         private System.Drawing.Point _currentPoint; // 現在の描画位置
         private Bitmap _bitmap; // 描画用のビットマップ
-        private Bitmap _overlayBitmap; // 透明なボード
-        private float _previousX; // 前回のX軸の値
-        private float _previousY; // 前回のY軸の値
+        private Bitmap _overlayBitmap; // 線を描画するためのビットマップ
+        private float _previousX; // 前回のXの値
+        private float _previousY; // 前回のYの値
         private int _isDrawing; // 描画中かどうかのフラグ
         private bool start = true; // 描画開始フラグ
         private int startX, startY; // 描画開始位置
+        private Stopwatch _cameraInputStopwatch; // カメラ入力FPS計測用のストップウォッチ
+        private Stopwatch _cameraDisplayStopwatch; // カメラ表示FPS計測用のストップウォッチ
+        private Stopwatch _sensorStopwatch; // センサー取得Hz計測用のストップウォッチ
 
         // コンストラクタ
         public Form1()
@@ -33,6 +37,22 @@ namespace ss2410
             InitializeComponent();
             Load += Form1_Load; // フォームロード時のイベントハンドラを追加
             FormClosing += Form1_FormClosing; // フォームクローズ時のイベントハンドラを追加
+
+            // Chartの初期設定
+            chart1.Series.Clear();
+            chart1.Series.Add("X Tilt");
+            chart1.Series.Add("Y Tilt");
+            chart1.Series.Add("Z Tilt");
+
+            // グラフの設定
+            foreach (var series in chart1.Series)
+            {
+                series.ChartType = SeriesChartType.Line; // 折れ線グラフ
+            }
+
+            _cameraInputStopwatch = new Stopwatch();
+            _cameraDisplayStopwatch = new Stopwatch();
+            _sensorStopwatch = new Stopwatch();
         }
 
         // フォームロード時の処理
@@ -130,6 +150,7 @@ namespace ss2410
         {
             while (_isRunning)
             {
+                _sensorStopwatch.Restart();
                 try
                 {
                     string data = _serialPort.ReadLine(); // シリアルポートから1行読み込む
@@ -137,7 +158,7 @@ namespace ss2410
 
                     if (values.Length == 4)
                     {
-                        if (float.TryParse(values[1], out float xTilt) && float.TryParse(values[2], out float yTilt))
+                        if (float.TryParse(values[1], out float xTilt) && float.TryParse(values[2], out float yTilt) && float.TryParse(values[3], out float zTilt))
                         {
                             // 描画の開始/終了を切り替え
                             _isDrawing = int.Parse(values[0]);
@@ -152,6 +173,27 @@ namespace ss2410
                             // 描画位置が画面外に出ないように制限
                             _currentPoint.X = Math.Max(0, Math.Min(Width, _currentPoint.X));
                             _currentPoint.Y = Math.Max(0, Math.Min(Height, _currentPoint.Y));
+
+                            // グラフに値を追加
+                            Invoke(new Action(() =>
+                            {
+                                chart1.Series["X Tilt"].Points.AddY(xTilt);
+                                chart1.Series["Y Tilt"].Points.AddY(yTilt);
+                                chart1.Series["Z Tilt"].Points.AddY(zTilt);
+
+                                // データポイントが多すぎる場合は古いデータを削除
+                                if (chart1.Series["X Tilt"].Points.Count > 100)
+                                {
+                                    chart1.Series["X Tilt"].Points.RemoveAt(0);
+                                    chart1.Series["Y Tilt"].Points.RemoveAt(0);
+                                    chart1.Series["Z Tilt"].Points.RemoveAt(0);
+                                }
+
+                                chart1.ResetAutoValues();
+
+                                // センサーの値をTextBoxに表示
+                                textBoxSensorFPS.Text = $"X Tilt: {xTilt}\r\nY Tilt: {yTilt}\r\nZ Tilt: {zTilt}";
+                            }));
                         }
                     }
                 }
@@ -159,6 +201,14 @@ namespace ss2410
                 {
                     Debug.WriteLine(ex.Message);
                 }
+                _sensorStopwatch.Stop();
+                double sensorFPS = 1000.0 / _sensorStopwatch.ElapsedMilliseconds;
+
+                // センサー取得FPSをTextBoxに表示
+                Invoke(new Action(() =>
+                {
+                    textBoxSensorFPS.Text = $"Sensor FPS: {sensorFPS:F2}";
+                }));
             }
         }
 
@@ -167,6 +217,7 @@ namespace ss2410
         {
             while (_isRunning)
             {
+                _cameraDisplayStopwatch.Restart();
                 if (_isDrawing == 1) // 描画中の場合のみ描画
                 {
                     Console.WriteLine("描画中: x = " + _currentPoint.X + ", y = " + _currentPoint.Y);
@@ -195,9 +246,9 @@ namespace ss2410
                             // 矢印のポイントを定義
                             PointF[] arrowPoints = new PointF[]
                             {
-                                new PointF(_currentPoint.X, _currentPoint.Y - 15), // 上の頂点
-                                new PointF(_currentPoint.X - 5, _currentPoint.Y ), // 左下の頂点
-                                new PointF(_currentPoint.X + 5, _currentPoint.Y ) // 右下の頂点
+                                    new PointF(_currentPoint.X, _currentPoint.Y - 15), // 上の頂点
+                                    new PointF(_currentPoint.X - 5, _currentPoint.Y ), // 左下の頂点
+                                    new PointF(_currentPoint.X + 5, _currentPoint.Y ) // 右下の頂点
                             };
 
                             // 現在の座標に矢印を描画
@@ -238,6 +289,14 @@ namespace ss2410
                         }));
                     }
                 }
+                _cameraDisplayStopwatch.Stop();
+                double displayFPS = 1000.0 / _cameraDisplayStopwatch.ElapsedMilliseconds;
+
+                // 画像表示FPSをTextBoxに表示
+                Invoke(new Action(() =>
+                {
+                    textBoxCameraDisplayFPS.Text = $"Display FPS: {displayFPS:F2}";
+                }));
 
                 Thread.Sleep(3); // 約30fpsで更新
             }
@@ -248,14 +307,30 @@ namespace ss2410
         {
             while (_isRunning)
             {
+                _cameraInputStopwatch.Restart();
                 using (var frame = new Mat())
                 {
                     _camera.Read(frame); // カメラからフレームを読み込む
                     if (!frame.Empty())
                     {
                         _bitmap = BitmapConverter.ToBitmap(frame); // フレームをビットマップに変換
+
+                        // カメラの入力をTextBoxに表示
+                        Invoke(new Action(() =>
+                        {
+                            textBoxCameraInputFPS.Text = frame.ToString();
+                        }));
                     }
                 }
+                _cameraInputStopwatch.Stop();
+                double cameraInputFPS = 1000.0 / _cameraInputStopwatch.ElapsedMilliseconds;
+
+                // カメラ入力FPSをTextBoxに表示
+                Invoke(new Action(() =>
+                {
+                    textBoxCameraInputFPS.Text = $"Camera Input FPS: {cameraInputFPS:F2}";
+                }));
+
                 Thread.Sleep(33); // 約30fpsで更新
             }
         }
