@@ -38,6 +38,11 @@ namespace ss2410
             Load += Form1_Load; // フォームロード時のイベントハンドラを追加
             FormClosing += Form1_FormClosing; // フォームクローズ時のイベントハンドラを追加
 
+            // フォームのタイトルとアイコンを設定
+            this.Text = "ss2410";
+            this.Icon = new Icon("C:\\Users\\Owner\\source\\repos\\SkillSemi2024\\ss2409-01\\OIP_result.ico");
+
+
             // Chartの初期設定
             chart1.Series.Clear();
             chart1.Series.Add("X Tilt");
@@ -83,7 +88,7 @@ namespace ss2410
             _drawThread = new Thread(DrawLoop); // お絵かき用のスレッドを作成
             _drawThread.Start(); // スレッドを開始
 
-            _currentPoint = new System.Drawing.Point(Width / 4, Height / 2); // 初期描画位置を画面中央に設定
+            _currentPoint = new System.Drawing.Point(Width / 2, Height / 2); // 初期描画位置を画面中央に設定
             _overlayBitmap = new Bitmap(Width, Height); // 透明なボードを初期化
             Console.WriteLine("初期座標:  x = " + _currentPoint.X + ", y = " + _currentPoint.Y);
         }
@@ -207,7 +212,7 @@ namespace ss2410
                 // センサー取得FPSをTextBoxに表示
                 Invoke(new Action(() =>
                 {
-                    textBoxSensorFPS.Text = $"Sensor FPS: {sensorFPS:F2}";
+                    textBoxSensorFPS.Text = $"センサ: {sensorFPS:F2}hz";
                 }));
             }
         }
@@ -291,14 +296,14 @@ namespace ss2410
                 }
                 _cameraDisplayStopwatch.Stop();
                 double displayFPS = 1000.0 / _cameraDisplayStopwatch.ElapsedMilliseconds;
+                             
+                Thread.Sleep(1);
 
                 // 画像表示FPSをTextBoxに表示
                 Invoke(new Action(() =>
                 {
-                    textBoxCameraDisplayFPS.Text = $"Display FPS: {displayFPS:F2}";
+                    textBoxCameraDisplayFPS.Text = $"画面表示: {displayFPS:F2}fps";
                 }));
-
-                Thread.Sleep(3); // 約30fpsで更新
             }
         }
 
@@ -314,24 +319,17 @@ namespace ss2410
                     if (!frame.Empty())
                     {
                         _bitmap = BitmapConverter.ToBitmap(frame); // フレームをビットマップに変換
-
-                        // カメラの入力をTextBoxに表示
-                        Invoke(new Action(() =>
-                        {
-                            textBoxCameraInputFPS.Text = frame.ToString();
-                        }));
                     }
                 }
+                Thread.Sleep(33);
+
                 _cameraInputStopwatch.Stop();
                 double cameraInputFPS = 1000.0 / _cameraInputStopwatch.ElapsedMilliseconds;
-
                 // カメラ入力FPSをTextBoxに表示
                 Invoke(new Action(() =>
                 {
-                    textBoxCameraInputFPS.Text = $"Camera Input FPS: {cameraInputFPS:F2}";
+                    textBoxCameraInputFPS.Text = $"カメラ入力: {cameraInputFPS:F2}fps";
                 }));
-
-                Thread.Sleep(33); // 約30fpsで更新
             }
         }
 
@@ -340,12 +338,15 @@ namespace ss2410
         {
             _isRunning = false; // スレッドの実行フラグを停止
             _cameraThread.Join(); // スレッドの終了を待機
-            _sensorThread.Join(); // センサー入力用のスレッドの終了を待機
-            _drawThread.Join(); // お絵かき用のスレッドの終了を待機
-            _camera.Release(); // カメラリソースを解放
-            _camera.Dispose(); // カメラオブジェクトを破棄
+            if (_isRunning)
+            {
+                _camera.Release(); // カメラリソースを解放
+                _camera.Dispose(); // カメラオブジェクトを破棄
+            }
             if (_serialPort != null && _serialPort.IsOpen)
             {
+                _sensorThread.Join(); // センサー入力用のスレッドの終了を待機
+                _drawThread.Join(); // お絵かき用のスレッドの終了を待機
                 _serialPort.Close(); // シリアルポートを閉じる
             }
         }
