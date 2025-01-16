@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.textBoxCameraInputFPS = new System.Windows.Forms.TextBox();
@@ -56,22 +56,23 @@
             // 
             this.chart1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            chartArea3.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea3);
-            legend3.Name = "Legend1";
-            this.chart1.Legends.Add(legend3);
+            chartArea1.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            this.chart1.Legends.Add(legend1);
             this.chart1.Location = new System.Drawing.Point(440, 36);
             this.chart1.Name = "chart1";
-            series3.ChartArea = "ChartArea1";
-            series3.Legend = "Legend1";
-            series3.Name = "Series1";
-            this.chart1.Series.Add(series3);
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            this.chart1.Series.Add(series1);
             this.chart1.Size = new System.Drawing.Size(348, 361);
             this.chart1.TabIndex = 1;
             this.chart1.Text = "chart1";
             // 
             // textBoxCameraInputFPS
             // 
+            this.textBoxCameraInputFPS.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.textBoxCameraInputFPS.Location = new System.Drawing.Point(46, 419);
             this.textBoxCameraInputFPS.Name = "textBoxCameraInputFPS";
             this.textBoxCameraInputFPS.Size = new System.Drawing.Size(175, 19);
@@ -79,6 +80,7 @@
             // 
             // textBoxCameraDisplayFPS
             // 
+            this.textBoxCameraDisplayFPS.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.textBoxCameraDisplayFPS.Location = new System.Drawing.Point(239, 419);
             this.textBoxCameraDisplayFPS.Name = "textBoxCameraDisplayFPS";
             this.textBoxCameraDisplayFPS.Size = new System.Drawing.Size(177, 19);
@@ -86,6 +88,7 @@
             // 
             // textBoxSensorFPS
             // 
+            this.textBoxSensorFPS.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.textBoxSensorFPS.Location = new System.Drawing.Point(440, 419);
             this.textBoxSensorFPS.Name = "textBoxSensorFPS";
             this.textBoxSensorFPS.Size = new System.Drawing.Size(187, 19);

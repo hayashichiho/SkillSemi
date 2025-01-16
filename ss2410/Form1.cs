@@ -168,8 +168,8 @@ namespace ss2410
                             // 描画の開始/終了を切り替え
                             _isDrawing = int.Parse(values[0]);
 
-                            _currentPoint.X += (int)((xTilt - _previousX) * 150); // スケーリングを調整
-                            _currentPoint.Y += (int)((yTilt - _previousY) * 300); // スケーリングを調整
+                            _currentPoint.X += (int)((xTilt - _previousX) * 800); // スケーリングを調整
+                            _currentPoint.Y += (int)((yTilt - _previousY) * 800); // スケーリングを調整
 
                             // 前回の傾斜を更新
                             _previousX = xTilt;
@@ -337,16 +337,42 @@ namespace ss2410
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             _isRunning = false; // スレッドの実行フラグを停止
-            _cameraThread.Join(); // スレッドの終了を待機
-            if (_isRunning)
+
+            Console.WriteLine("終了処理を行います");
+
+            if (_cameraThread != null && _cameraThread.IsAlive)
+            {
+                if (!_cameraThread.Join(1000)) // カメラ表示用のスレッドの終了を待機
+                {
+                    _cameraThread.Abort(); // スレッドが終了しない場合は強制終了
+                }
+                Console.WriteLine("カメラスレッドが終了しました");
+            }
+
+            if (_sensorThread != null && _sensorThread.IsAlive)
+            {
+                if (!_sensorThread.Join(1000)) // センサー入力用のスレッドの終了を待機
+                {
+                    _sensorThread.Abort(); // スレッドが終了しない場合は強制終了
+                }
+            }
+
+            if (_drawThread != null && _drawThread.IsAlive)
+            {
+                if (!_drawThread.Join(1000)) // お絵かき用のスレッドの終了を待機
+                {
+                    _drawThread.Abort(); // スレッドが終了しない場合は強制終了
+                }
+            }
+
+            if (_camera != null)
             {
                 _camera.Release(); // カメラリソースを解放
                 _camera.Dispose(); // カメラオブジェクトを破棄
             }
+
             if (_serialPort != null && _serialPort.IsOpen)
             {
-                _sensorThread.Join(); // センサー入力用のスレッドの終了を待機
-                _drawThread.Join(); // お絵かき用のスレッドの終了を待機
                 _serialPort.Close(); // シリアルポートを閉じる
             }
         }
