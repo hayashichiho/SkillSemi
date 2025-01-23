@@ -382,5 +382,13 @@ FodyWeavers.xsd
 *.Identifier
 *.sln
 *.resx
-*.config# ローカルの変更をスタッシュ
-git stash
+*.config
+
+# Visual Studio関連のファイルを除外
+.vs/
+*.vcxproj.user
+*.vcxproj.filters
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
