@@ -1,30 +1,156 @@
+#include "opencv2/opencv.hpp"
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include "zmq.hpp"
+#include <stdlib.h>
+#include <stdio.h>
 #include <iostream>
-#include <opencv2/opencv.hpp>
+#include <vector>
+#include <thread>
+#include <atomic>
 
+// ƒƒbƒZ[ƒW‘—MŒã‚Éƒƒ‚ƒŠ‚ğ‰ğ•ú‚·‚éƒƒ\ƒbƒh
+void my_free(void* data, void* hint)
+{
+    free(data);
+}
+
+// ‰æ‘œ‚ğæ“¾‚µ‚ÄZMQ‚Å‘—M‚·‚éƒƒ\ƒbƒh
+void send_image(cv::VideoCapture& cap, zmq::socket_t& socket, int command)
+{
+    try {
+        cv::Mat image; // æ“¾‚µ‚½ƒtƒŒ[ƒ€
+
+        // ƒtƒŒ[ƒ€‚ğæ“¾
+        if (cap.read(image)) {
+            // ‰æ‘œî•ñ
+            int32_t info[2];
+            info[0] = static_cast<int32_t>(image.rows);
+            info[1] = static_cast<int32_t>(image.cols);
+
+            // ‰æ‘œî•ñ‚ÆƒRƒ}ƒ“ƒh‚ğ‘—M
+            zmq::message_t command_msg(&command, sizeof(command));
+            socket.send(command_msg, zmq::send_flags::sndmore);
+
+            for (int i = 0; i < 2; i++) {
+                zmq::message_t msg(&info[i], sizeof(int32_t), nullptr);
+                socket.send(msg, zmq::send_flags::sndmore);
+            }
+
+            // ƒsƒNƒZƒ‹ƒf[ƒ^‚ğ‘—M
+            std::vector<uchar> data(image.total() * image.elemSize());
+            memcpy(data.data(), image.data, data.size());
+
+            // ƒƒbƒZ[ƒWƒIƒuƒWƒFƒNƒg‚Ìì¬
+            zmq::message_t msg2(data.data(), data.size(), nullptr);
+
+            // ƒƒbƒZ[ƒW‚Ì‘—M
+            socket.send(msg2, zmq::send_flags::none);
+
+            // ƒŒƒXƒ|ƒ“ƒX‚ğóM
+            zmq::message_t reply;
+            socket.recv(reply, zmq::recv_flags::none);
+            std::string reply_str(static_cast<char*>(reply.data()), reply.size());
+        }
+        else {
+            std::cerr << "ƒtƒŒ[ƒ€‚Ìæ“¾‚É¸”s‚µ‚Ü‚µ‚½" << std::endl;
+        }
+    }
+    catch (const std::exception& e) {
+        std::cerr << "send_imageŠÖ”“à‚Å—áŠO‚ª”­¶‚µ‚Ü‚µ‚½: " << e.what() << std::endl;
+    }
+}
+
+// ƒƒCƒ“ŠÖ”
 int main(int argc, char* argv[]) {
-    cv::VideoCapture cap(0);  // ãƒ‡ãƒã‚¤ã‚¹ã®ã‚ªãƒ¼ãƒ—ãƒ³
+    zmq::context_t context(1);
+    zmq::socket_t socket(context, ZMQ_REQ);
+    zmq::socket_t control_socket(context, ZMQ_PULL);
 
-    if (!cap.isOpened())  // ã‚«ãƒ¡ãƒ©ãƒ‡ãƒã‚¤ã‚¹ãŒæ­£å¸¸ã«ã‚ªãƒ¼ãƒ—ãƒ³ã—ãŸã‹ç¢ºèª
-    {
-        // èª­ã¿è¾¼ã¿ã«å¤±æ•—ã—ãŸã¨ãã®å‡¦ç†
-        std::cerr << "Error: Could not open camera" << std::endl;
+    try {
+        std::cout << "ƒvƒƒOƒ‰ƒ€ŠJn" << std::endl;
+
+        // ZMQƒRƒlƒNƒVƒ‡ƒ“‚ğì¬
+        socket.connect("tcp://localhost:5555");
+        std::cout << "localhost:5555‚ÉÚ‘±‚µ‚Ü‚µ‚½" << std::endl;
+
+        control_socket.bind("tcp://localhost:5557");
+        std::cout << "localhost:5557‚ÉƒoƒCƒ“ƒh‚µ‚Ü‚µ‚½" << std::endl;
+
+        cv::VideoCapture cap(0, cv::CAP_DSHOW); // ƒfƒoƒCƒX‚ÌƒI[ƒvƒ“
+
+        // ƒJƒƒ‰ƒfƒoƒCƒX‚ª³í‚ÉƒI[ƒvƒ“‚µ‚½‚©Šm”F
+        if (!cap.isOpened()) {
+            std::cerr << "ƒJƒƒ‰‚ğ‹N“®‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½" << std::endl;
+            return -1;
+        }
+
+        // ƒJƒƒ‰‚ÌƒvƒƒpƒeƒB‚ğİ’è
+        cap.set(cv::CAP_PROP_FRAME_WIDTH, 640);
+        cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+		cap.set(cv::CAP_PROP_FPS, 30);
+
+        std::atomic<bool> is_running(true); // ƒvƒƒWƒFƒNƒgis’†ƒtƒ‰ƒO
+        std::atomic<bool> is_sending(false); // c#‚É‰æ‘œ‚ğ‘—‚éƒtƒ‰ƒO
+        int command;
+
+        std::thread control_thread([&]() {
+            while (is_running) {
+                // C#‚©‚ç‚Ìƒtƒ‰ƒO‚É‘Î‰
+                zmq::message_t message;
+                control_socket.recv(message, zmq::recv_flags::none);
+                command = *static_cast<int*>(message.data());
+                std::cout << "ƒƒbƒZ[ƒW‚ğóM‚µ‚Ü‚µ‚½: " << command << std::endl;
+
+                if (command == 1) { // start
+                    is_sending = true;
+                }
+                else if (command == 0) { // stop
+                    is_sending = false;
+                }
+                else if (command == -1) { // exit
+                    is_sending = false;
+
+					std::cout << "5555ƒ|[ƒg‚ÉI—¹ƒRƒ}ƒ“ƒh‚ğ‘—M‚µ‚Ü‚·D" << std::endl;
+                    // 5555ƒ|[ƒg‚ÉI—¹ƒRƒ}ƒ“ƒh‚ğ‘—M
+                    send_image(cap, socket, command);
+
+                    // ƒvƒƒOƒ‰ƒ€I—¹‚Ìˆ—
+                    std::cout << "ƒvƒƒOƒ‰ƒ€I—¹" << std::endl;
+
+                    // ƒ|[ƒg‚ğ‰ğ•ú
+                    std::cout << "ƒ\ƒPƒbƒg‚ğ•Â‚¶‚Ü‚·..." << std::endl;
+                    socket.close();
+                    control_socket.close();
+                    context.close();
+                    std::cout << "ƒ\ƒPƒbƒg‚ª•Â‚¶‚ç‚ê‚Ü‚µ‚½B" << std::endl;
+
+                    is_running = false;
+                }
+            }
+        });
+
+        try {
+            while (is_running) {
+                // Python‚É‰æ‘œ‚Æƒtƒ‰ƒO‚ğ‘—‚é
+                if (is_sending) {
+                    send_image(cap, socket, command);
+                }
+                // “KØ‚ÈƒtƒŒ[ƒ€ƒŒ[ƒg‚ğˆÛ‚·‚é‚½‚ß‚É‘Ò‹@
+                cv::waitKey(30);
+            }
+        }
+        catch (const std::exception& e) {
+            std::cerr << "ZMQ‚ÌƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½: " << e.what() << std::endl;
+            return -1;
+        }
+
+        control_thread.join();
+    }
+    catch (const std::exception& e) {
+        std::cerr << "—áŠO‚ª”­¶‚µ‚Ü‚µ‚½: " << e.what() << std::endl;
         return -1;
     }
 
-    cv::Mat frame;           // å–å¾—ã—ãŸãƒ•ãƒ¬ãƒ¼ãƒ 
-    while (cap.read(frame))  // ç„¡é™ãƒ«ãƒ¼ãƒ—
-    {
-        cv::imshow("win", frame);  // ç”»åƒã‚’è¡¨ç¤º
-        const int key = cv::waitKey(1);
-        if (key == 'q')  // qãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚ŒãŸã¨ã
-        {
-            break;
-        }
-    }
-
-    cv::destroyAllWindows();
     return 0;
 }
-
-// g++ -o my_program opencv.cpp `pkg-config --cflags --libs opencv4`
-// ./my_program
