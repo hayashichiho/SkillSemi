@@ -4,6 +4,8 @@ import struct
 import numpy as np
 import cv2
 import atexit
+import openface
+import os
 
 def setup_sockets(conn_str, send_str, exit_str):
     # Create sockets
@@ -17,7 +19,7 @@ def setup_sockets(conn_str, send_str, exit_str):
 
     exit_sock = ctx.socket(zmq.REP)
     try:
-        exit_sock.bind(exit_str)  # Bind socket for receiving from C#
+        exit_sock.bind(exit_str)  # Bind socket for receiving exit command from C#
     except zmq.ZMQError as e:
         print(f"Failed to bind port {exit_str}: {e}")
         exit(1)
@@ -32,10 +34,11 @@ def setup_sockets(conn_str, send_str, exit_str):
 def receive_data(recv_sock):
     # Receive data as binary
     parts = recv_sock.recv_multipart()
-    command = struct.unpack('i', parts[0])[0]
-    byte_rows = parts[1]
-    byte_cols = parts[2]
-    data = parts[3]
+    camera_connected = struct.unpack('?', parts[0])[0]
+    command = struct.unpack('i', parts[1])[0]
+    byte_rows = parts[2]
+    byte_cols = parts[3]
+    data = parts[4]
 
     # Convert byte array to numbers
     rows = struct.unpack('i', byte_rows)[0]
@@ -43,16 +46,18 @@ def receive_data(recv_sock):
 
     # Reconstruct image data
     image = np.frombuffer(data, dtype=np.uint8).reshape((rows, cols, 3))
+    image = image.copy()  # Make the image writable by creating a copy
 
-    return command, image
+    return camera_connected, command, image
 
-def send_image(send_sock, image):
+def send_image(send_sock, image, camera_connected):
     # Encode image data in JPEG format
     _, buffer = cv2.imencode('.jpg', image)
     jpeg_data = buffer.tobytes()
 
-    # Send image data to C#
-    send_sock.send_multipart([jpeg_data])
+    # Send camera_connected state and image data to C#
+    send_sock.send_multipart([struct.pack('?', camera_connected), jpeg_data])
+    print("Sent image data and camera_connected state")
 
 def receive_flag(exit_sock):
     try:
@@ -63,14 +68,28 @@ def receive_flag(exit_sock):
         pass
     return True
 
+def detect_faces(face_aligner, image):
+    # Convert image to RGB
+    image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+    # Detect faces
+    detected_faces = face_aligner.getAllFaceBoundingBoxes(image_rgb)
+
+    # Draw bounding boxes on the image
+    for rect in detected_faces:
+        x, y, w, h = rect.left(), rect.top(), rect.width(), rect.height()
+        cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+    return image
+
 def cleanup(ctx, recv_sock, send_sock, exit_sock):
     # Release resources
-    print("closing socket")
+    print("Closing sockets")
     recv_sock.close()
     send_sock.close()
     exit_sock.close()
     ctx.term()
-    print("soket closed")
+    print("Sockets closed")
 
 def main():
     # Connection addresses
@@ -84,13 +103,19 @@ def main():
     # Register cleanup function to be called on exit
     atexit.register(cleanup, ctx, recv_sock, send_sock, exit_sock)
 
+    # Get the absolute path of the shape predictor file
+    predictor_path = os.path.join(os.path.dirname(__file__), "shape_predictor_68_face_landmarks.dat")
+
+    # Initialize OpenFace face aligner
+    face_aligner = openface.AlignDlib(predictor_path)
+
     is_running = True
     is_sending = False
     
     while is_running:
         try:
-            # Receive
-            command, image = receive_data(recv_sock)
+            # Receive data
+            camera_connected, command, image = receive_data(recv_sock)
             
             # Send response to receiving socket
             recv_sock.send(b"OK")
@@ -106,15 +131,16 @@ def main():
             elif command == 0: # stop
                 is_sending = False
 
-            # Send
+            # Detect faces
             if is_sending:
-                send_image(send_sock, image)
+                image = detect_faces(face_aligner, image)
+                send_image(send_sock, image, camera_connected)
 
         except Exception as e:
             print(f"Error: {e}")
             recv_sock.send(b"ERROR")
 
-    print("finish program")
+    print("Program finished")
 
 if __name__ == "__main__":
     main()

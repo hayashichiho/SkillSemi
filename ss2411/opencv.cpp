@@ -16,10 +16,14 @@ void my_free(void* data, void* hint)
 }
 
 // 画像を取得してZMQで送信するメソッド
-void send_image(cv::VideoCapture& cap, zmq::socket_t& socket, int command)
+void send_image(cv::VideoCapture& cap, zmq::socket_t& socket, int command, bool camera_connected)
 {
     try {
         cv::Mat image; // 取得したフレーム
+
+        // カメラ接続状態を送信
+        zmq::message_t camera_connected_msg(&camera_connected, sizeof(camera_connected));
+        socket.send(camera_connected_msg, zmq::send_flags::sndmore);
 
         // フレームを取得
         if (cap.read(image)) {
@@ -28,10 +32,11 @@ void send_image(cv::VideoCapture& cap, zmq::socket_t& socket, int command)
             info[0] = static_cast<int32_t>(image.rows);
             info[1] = static_cast<int32_t>(image.cols);
 
-            // 画像情報とコマンドを送信
+            // コマンドを送信
             zmq::message_t command_msg(&command, sizeof(command));
             socket.send(command_msg, zmq::send_flags::sndmore);
 
+            // 画像情報を送信
             for (int i = 0; i < 2; i++) {
                 zmq::message_t msg(&info[i], sizeof(int32_t), nullptr);
                 socket.send(msg, zmq::send_flags::sndmore);
@@ -40,14 +45,12 @@ void send_image(cv::VideoCapture& cap, zmq::socket_t& socket, int command)
             // ピクセルデータを送信
             std::vector<uchar> data(image.total() * image.elemSize());
             memcpy(data.data(), image.data, data.size());
+			std::cout << "data size: " << data.size() << std::endl;
 
-            // メッセージオブジェクトの作成
             zmq::message_t msg2(data.data(), data.size(), nullptr);
-
-            // メッセージの送信
             socket.send(msg2, zmq::send_flags::none);
 
-            // レスポンスを受信
+            // C#からの返信を受信
             zmq::message_t reply;
             socket.recv(reply, zmq::recv_flags::none);
             std::string reply_str(static_cast<char*>(reply.data()), reply.size());
@@ -63,6 +66,7 @@ void send_image(cv::VideoCapture& cap, zmq::socket_t& socket, int command)
 
 // メイン関数
 int main(int argc, char* argv[]) {
+    // ZMQのコンテキストとソケットを作成
     zmq::context_t context(1);
     zmq::socket_t socket(context, ZMQ_REQ);
     zmq::socket_t control_socket(context, ZMQ_PULL);
@@ -77,22 +81,12 @@ int main(int argc, char* argv[]) {
         control_socket.bind("tcp://localhost:5557");
         std::cout << "localhost:5557にバインドしました" << std::endl;
 
-        cv::VideoCapture cap(0, cv::CAP_DSHOW); // デバイスのオープン
-
-        // カメラデバイスが正常にオープンしたか確認
-        if (!cap.isOpened()) {
-            std::cerr << "カメラを起動できませんでした" << std::endl;
-            return -1;
-        }
-
-        // カメラのプロパティを設定
-        cap.set(cv::CAP_PROP_FRAME_WIDTH, 640);
-        cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
-		cap.set(cv::CAP_PROP_FPS, 30);
-
         std::atomic<bool> is_running(true); // プロジェクト進行中フラグ
         std::atomic<bool> is_sending(false); // c#に画像を送るフラグ
         int command;
+        std::string selected_camera;
+		bool camera_connected = false;
+        cv::VideoCapture cap; // カメラデバイス
 
         std::thread control_thread([&]() {
             while (is_running) {
@@ -103,6 +97,27 @@ int main(int argc, char* argv[]) {
                 std::cout << "メッセージを受信しました: " << command << std::endl;
 
                 if (command == 1) { // start
+                    zmq::message_t camera_message;
+                    control_socket.recv(camera_message, zmq::recv_flags::none);
+                    selected_camera = std::string(static_cast<char*>(camera_message.data()), camera_message.size());
+                    std::cout << "選択されたカメラ: " << selected_camera << std::endl;
+
+                    // カメラデバイスを初期化
+                    int camera_index = (selected_camera == "camera 0") ? 0 : -1;
+                    cap.open(camera_index, cv::CAP_DSHOW);
+                    if (!cap.isOpened()) {
+                        std::cerr << "カメラデバイスが見つかりません" << std::endl;
+						camera_connected = false;
+                    }
+                    else
+					{
+						camera_connected = true;
+					}
+
+                    cap.set(cv::CAP_PROP_FRAME_WIDTH, 640);
+                    cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+                    cap.set(cv::CAP_PROP_FPS, 30);
+
                     is_sending = true;
                 }
                 else if (command == 0) { // stop
@@ -111,9 +126,9 @@ int main(int argc, char* argv[]) {
                 else if (command == -1) { // exit
                     is_sending = false;
 
-					std::cout << "5555ポートに終了コマンドを送信します．" << std::endl;
+                    std::cout << "5555ポートに終了コマンドを送信します．" << std::endl;
                     // 5555ポートに終了コマンドを送信
-                    send_image(cap, socket, command);
+                    send_image(cap, socket, command, camera_connected);
 
                     // プログラム終了時の処理
                     std::cout << "プログラム終了" << std::endl;
@@ -128,16 +143,16 @@ int main(int argc, char* argv[]) {
                     is_running = false;
                 }
             }
-        });
+            });
 
         try {
             while (is_running) {
                 // Pythonに画像とフラグを送る
                 if (is_sending) {
-                    send_image(cap, socket, command);
+                    send_image(cap, socket, command, camera_connected);
                 }
                 // 適切なフレームレートを維持するために待機
-                cv::waitKey(30);
+                cv::waitKey(10);
             }
         }
         catch (const std::exception& e) {
