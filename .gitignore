@@ -392,3 +392,12 @@ FodyWeavers.xsd
 *.user
 *.userosscache
 *.sln.docstates
+
+# Ignore large files
+*.pth
+*.f3d
+*.3mf
+*.mp4
+*.zip
+*.tar.gz
+*.db
