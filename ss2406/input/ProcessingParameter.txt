@@ -1,0 +1,8 @@
+Input = CT_Original.mhd
+Output = CT_Original_SobelX
+ImageProcessing = SobelX
+WindowProcessing = True
+WindowLevel = 100
+WindowWidth = 400
+MovingAverageFilterKernel = 3
+MedianFilterKernel = 3
