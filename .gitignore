@@ -401,3 +401,4 @@ FodyWeavers.xsd
 *.zip
 *.tar.gz
 *.db
+*.onnx
