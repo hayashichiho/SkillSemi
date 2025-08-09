@@ -1,109 +1,63 @@
-"""
-Test of 2-class classification model
-Created on Fri Oct 14 2022
-@author: ynomura
-"""
-
-import argparse
 import os
 import sys
-from datetime import datetime as dt
-
-import numpy as np
-import roc
 import torch
-from resnet18 import WideResNet18
-from torchvision import datasets, transforms
-
-
-def do_test(test_data_path, model_file_name, output_path, gpu_id="0", time_stamp=""):
-    if not os.path.isdir(test_data_path):
-        print(f"Error: Path of test data ({test_data_path}) is not found.")
-        sys.exit(1)
-
-    # Automatic creation of output folder
-    if not os.path.isdir(output_path):
-        print(f"Path of output data ({output_path}) is created automatically.")
-        os.makedirs(output_path)
-
-    # Set ID of CUDA device
-    device = f"cuda:{gpu_id}"
-    print(f"Device: {device}")
-
-    if time_stamp == "":
-        time_stamp = dt.now().strftime("%Y%m%d%H%M%S")
-    roc_curve_file_name = f"{output_path}/test_roc_{time_stamp}.png"
-
-    # Create dataset
-    test_data_transform = transforms.Compose([transforms.ToTensor()])
-    test_dataset = datasets.ImageFolder(
-        root=test_data_path, transform=test_data_transform
-    )
-    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=1, num_workers=2)
-    test_data_size = len(test_loader.dataset)
-
-    print("Classes are: ", test_dataset.class_to_idx)
-    class_labels = list(test_dataset.class_to_idx.keys())
-
-    # load network
-    in_channels = test_dataset[0][0].shape[0]
-    class_num = len(test_dataset.classes)
-    model = WideResNet18(3, 2)
-    model.load_state_dict(torch.load(model_file_name, map_location=device))
-    model = model.to(device)
-    model.eval()
-
-    auc = 0.0
-    test_accuracy = 0
-    probabilities = np.zeros(test_data_size)
-    abnormal_labels = np.zeros(test_data_size)
-
-    with torch.no_grad():
-        for batch_idx, (test_data, test_labels) in enumerate(test_loader):
-            abnormal_labels[batch_idx] = test_labels[0]  # 1:positive => 1
-            data, labels = test_data.to(device), test_labels.to(device)
-
-            outputs = model(data)
-            probabilities[batch_idx] = outputs.cpu()[0, 1]
-
-            pred = outputs.argmax(dim=1, keepdim=True)
-            test_accuracy += pred.eq(labels.data.view_as(pred)).sum().item()
-
-        auc, tpr, fpr, cutoff_threshold = roc.roc_analysis(
-            probabilities, abnormal_labels, roc_curve_file_name
-        )
-        print(
-            f"Sensitivity: {tpr:.3f}, Specificity: {1.0 - fpr:.3f} ({cutoff_threshold})"
-        )
-
-    return auc
-
+from torch.utils.data import DataLoader
+from torchvision import transforms, datasets
+from resnet18 import ResNet18
+import pandas as pd
+import argparse
+import datetime
+from roc import plot_roc
 
 def main():
-    # Parse command line arguments by argparse
-    parser = argparse.ArgumentParser(
-        description="Sample code to test 2-class classification model in SS2022"
-    )
-    parser.add_argument("test_data_path", help="Path of test data")
-    parser.add_argument("model_file_name", help="File name of trained model")
-    parser.add_argument("output_path", help="Path of output data")
-    parser.add_argument("-g", "--gpu_id", help="ID of GPU", default="0")
-    parser.add_argument(
-        "--time_stamp", help="Time stamp for saved data", type=str, default=""
-    )
-
+    parser = argparse.ArgumentParser()
+    parser.add_argument('test_path', type=str, help='テスト用データのパス')
+    parser.add_argument('model_path', type=str, help='モデルファイル名')
+    parser.add_argument('output_path', type=str, help='出力パス')
+    parser.add_argument('--gpu_id', '-g', type=int, default=0, help='GPU ID')
+    parser.add_argument('--time_stamp', type=str, default=None, help='タイムスタンプ')
     args = parser.parse_args()
 
-    auc = do_test(
-        args.test_data_path,
-        args.model_file_name,
-        args.output_path,
-        args.gpu_id,
-        args.time_stamp,
-    )
+    if args.time_stamp is None:
+        args.time_stamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
 
-    print(f"Test AUC: {auc:.3f}")
+    device = torch.device(f'cuda:{args.gpu_id}' if torch.cuda.is_available() else 'cpu')
 
+    transform = transforms.Compose([
+        transforms.Resize((224, 224)),
+        transforms.ToTensor()
+    ])
+    test_dataset = datasets.ImageFolder(args.test_path, transform=transform)
+    test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
+
+    sample_img, _ = test_dataset[0]
+    in_channels = sample_img.shape[0]
+    num_classes = len(test_dataset.classes)
+
+    model = ResNet18(in_channels, num_classes).to(device)
+    model.load_state_dict(torch.load(args.model_path, map_location=device))
+    model.eval()
+
+    results = []
+    y_true = []
+    y_score = []
+
+    with torch.no_grad():
+        for idx, (images, labels) in enumerate(test_loader):
+            images, labels = images.to(device), labels.to(device)
+            outputs = model(images)
+            probs = torch.softmax(outputs, dim=1)
+            pred = torch.argmax(probs, dim=1)
+            results.append([idx, int(pred.item()), int(labels.item())])
+            y_true.append(int(labels.item()))
+            y_score.append(float(probs[0, 1].item()) if probs.shape[1] > 1 else float(probs[0, 0].item()))
+
+    df = pd.DataFrame(results, columns=['index', 'pred', 'true'])
+    df.to_csv(os.path.join(args.output_path, f"test_result_{args.time_stamp}.csv"), index=False)
+
+    # ROC曲線保存
+    roc_path = os.path.join(args.output_path, f"test_roc_{args.time_stamp}.png")
+    plot_roc(y_true, y_score, save_path=roc_path)
 
 if __name__ == "__main__":
     main()

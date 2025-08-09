@@ -401,9 +401,3 @@ FodyWeavers.xsd
 *.zip
 *.tar.gz
 *.db
-
-# Ignore untracked files
-ss2401-02/
-ss2402-01/
-ss2402-02/
-ss2403/
