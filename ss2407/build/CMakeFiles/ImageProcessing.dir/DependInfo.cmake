@@ -8,10 +8,10 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/hayashi/SkillSemi2024/ss2407/main.cpp" "CMakeFiles/ImageProcessing.dir/main.cpp.o" "gcc" "CMakeFiles/ImageProcessing.dir/main.cpp.o.d"
-  "/home/hayashi/SkillSemi2024/ss2407/path.cpp" "CMakeFiles/ImageProcessing.dir/path.cpp.o" "gcc" "CMakeFiles/ImageProcessing.dir/path.cpp.o.d"
-  "/home/hayashi/SkillSemi2024/ss2407/tricubic_interpolation.cpp" "CMakeFiles/ImageProcessing.dir/tricubic_interpolation.cpp.o" "gcc" "CMakeFiles/ImageProcessing.dir/tricubic_interpolation.cpp.o.d"
-  "/home/hayashi/SkillSemi2024/ss2407/tricubic_processing.cpp" "CMakeFiles/ImageProcessing.dir/tricubic_processing.cpp.o" "gcc" "CMakeFiles/ImageProcessing.dir/tricubic_processing.cpp.o.d"
+  "/home/hayashi/SkillSemi2024/ss2407/src/main.cpp" "CMakeFiles/ImageProcessing.dir/src/main.cpp.o" "gcc" "CMakeFiles/ImageProcessing.dir/src/main.cpp.o.d"
+  "/home/hayashi/SkillSemi2024/ss2407/src/path.cpp" "CMakeFiles/ImageProcessing.dir/src/path.cpp.o" "gcc" "CMakeFiles/ImageProcessing.dir/src/path.cpp.o.d"
+  "/home/hayashi/SkillSemi2024/ss2407/src/tricubic_interpolation.cpp" "CMakeFiles/ImageProcessing.dir/src/tricubic_interpolation.cpp.o" "gcc" "CMakeFiles/ImageProcessing.dir/src/tricubic_interpolation.cpp.o.d"
+  "/home/hayashi/SkillSemi2024/ss2407/src/tricubic_processing.cpp" "CMakeFiles/ImageProcessing.dir/src/tricubic_processing.cpp.o" "gcc" "CMakeFiles/ImageProcessing.dir/src/tricubic_processing.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

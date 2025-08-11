@@ -26,15 +26,21 @@
 
 ```
 ss2407/
-├── main.cpp                      # メインプログラム
-├── path.cpp / path.h             # パス・ファイル入出力処理
-├── tricubic_interpolation.cpp/h  # Tricubic補間計算
-├── tricubic_processing.cpp/h     # 等方化処理
 ├── CMakeLists.txt                # CMakeビルド設定
+├── Readme.md                     # この説明ファイル
+├── include/                      # ヘッダファイル
+│   ├── path.h
+│   ├── tricubic_interpolation.h
+│   └── tricubic_processing.h
+├── src/                          # ソースファイル
+│   ├── main.cpp
+│   ├── path.cpp
+│   ├── tricubic_interpolation.cpp
+│   └── tricubic_processing.cpp
 ├── input/                        # 入力データフォルダ
 │   ├── ChestCT.mhd
 │   └── ChestCT.raw
-├── output/                        # 出力データフォルダ
+├── output/                       # 出力データフォルダ（自動生成）
 │   ├── ChestCT_output.mhd
 │   └── ChestCT_output.raw
 ├── build/                        # ビルド成果物
@@ -63,12 +69,10 @@ ss2407/
 
 4. プログラムを実行する．
     ```sh
-    ./ImageProcessing /path/to/input.mhd /path/to/output.mhd 分解能（0より大きい値，任意）
+    ./ImageProcessing ../input/ChestCT.mhd ../output/ChestCT_output.mhd 1.0
     ```
-    例：
-    ```sh
-    ./ImageProcessing ../input/ChestCT.mhd ../input/ChestCT_output.mhd 1.0
-    ```
+    - 入力MHD/RAWは `input/` フォルダ
+    - 出力MHD/RAWは `output/` フォルダに自動保存されます
 
 ---
 
@@ -97,11 +101,11 @@ ss2407/
 
 ## MHD/RAWファイルの設定例
 
-MHDファイル（例：`ChestCT_output.mhd`）の内容を参考に，ImageJ等でRAW画像を表示する際は以下の設定を参照してください．
+MHDファイル（例：`output/ChestCT_output.mhd`）の内容を参考に，ImageJ等でRAW画像を表示する際は以下の設定を参照してください．
 
 | MHDファイルの項目            | ImageJでの設定例                   | 備考                       |
 |-----------------------------|------------------------------------|----------------------------|
-| DimSize = 512 512 512       | Width: 512, Height: 512, Depth:512 | 画像サイズ（幅・高さ・奥行）|
+| DimSize = 512 512 310       | Width: 512, Height: 512, Slices:310| 画像サイズ（幅・高さ・奥行）|
 | ElementType = MET_SHORT     | 16-bit Signed                      | データ型                   |
 | ElementByteOrderMSB = False | Little-endian                      | エンディアン（通常はLittle）|
 | ElementDataFile = ...       | RAWファイルを選択                  | ファイルパス               |
@@ -109,12 +113,6 @@ MHDファイル（例：`ChestCT_output.mhd`）の内容を参考に，ImageJ等
 ---
 
 ## ImageJでChestCT_output.rawを表示する設定例
-
-`output/ChestCT_output.mhd` の内容を参考に、ImageJでRAW画像を表示する場合は以下のように設定してください。
-
----
-
-### 手順
 
 1. **ImageJを起動**
    [ImageJ公式サイト](https://imagej.nih.gov/ij/download.html)からダウンロード・インストールしてください。
@@ -170,9 +168,3 @@ classDiagram
         + save_mhd_file()
     }
 ```
-
----
-
-## ライセンス
-
-このプロジェクトは [MITライセンス](https://opensource.org/licenses/MIT) の下で

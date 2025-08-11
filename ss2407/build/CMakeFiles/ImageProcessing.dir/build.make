@@ -69,76 +69,76 @@ include CMakeFiles/ImageProcessing.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/ImageProcessing.dir/flags.make
 
-CMakeFiles/ImageProcessing.dir/main.cpp.o: CMakeFiles/ImageProcessing.dir/flags.make
-CMakeFiles/ImageProcessing.dir/main.cpp.o: /home/hayashi/SkillSemi2024/ss2407/main.cpp
-CMakeFiles/ImageProcessing.dir/main.cpp.o: CMakeFiles/ImageProcessing.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/hayashi/SkillSemi2024/ss2407/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/ImageProcessing.dir/main.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/ImageProcessing.dir/main.cpp.o -MF CMakeFiles/ImageProcessing.dir/main.cpp.o.d -o CMakeFiles/ImageProcessing.dir/main.cpp.o -c /home/hayashi/SkillSemi2024/ss2407/main.cpp
+CMakeFiles/ImageProcessing.dir/src/main.cpp.o: CMakeFiles/ImageProcessing.dir/flags.make
+CMakeFiles/ImageProcessing.dir/src/main.cpp.o: /home/hayashi/SkillSemi2024/ss2407/src/main.cpp
+CMakeFiles/ImageProcessing.dir/src/main.cpp.o: CMakeFiles/ImageProcessing.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/hayashi/SkillSemi2024/ss2407/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/ImageProcessing.dir/src/main.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/ImageProcessing.dir/src/main.cpp.o -MF CMakeFiles/ImageProcessing.dir/src/main.cpp.o.d -o CMakeFiles/ImageProcessing.dir/src/main.cpp.o -c /home/hayashi/SkillSemi2024/ss2407/src/main.cpp
 
-CMakeFiles/ImageProcessing.dir/main.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/ImageProcessing.dir/main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/hayashi/SkillSemi2024/ss2407/main.cpp > CMakeFiles/ImageProcessing.dir/main.cpp.i
+CMakeFiles/ImageProcessing.dir/src/main.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/ImageProcessing.dir/src/main.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/hayashi/SkillSemi2024/ss2407/src/main.cpp > CMakeFiles/ImageProcessing.dir/src/main.cpp.i
 
-CMakeFiles/ImageProcessing.dir/main.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/ImageProcessing.dir/main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/hayashi/SkillSemi2024/ss2407/main.cpp -o CMakeFiles/ImageProcessing.dir/main.cpp.s
+CMakeFiles/ImageProcessing.dir/src/main.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/ImageProcessing.dir/src/main.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/hayashi/SkillSemi2024/ss2407/src/main.cpp -o CMakeFiles/ImageProcessing.dir/src/main.cpp.s
 
-CMakeFiles/ImageProcessing.dir/path.cpp.o: CMakeFiles/ImageProcessing.dir/flags.make
-CMakeFiles/ImageProcessing.dir/path.cpp.o: /home/hayashi/SkillSemi2024/ss2407/path.cpp
-CMakeFiles/ImageProcessing.dir/path.cpp.o: CMakeFiles/ImageProcessing.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/hayashi/SkillSemi2024/ss2407/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/ImageProcessing.dir/path.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/ImageProcessing.dir/path.cpp.o -MF CMakeFiles/ImageProcessing.dir/path.cpp.o.d -o CMakeFiles/ImageProcessing.dir/path.cpp.o -c /home/hayashi/SkillSemi2024/ss2407/path.cpp
+CMakeFiles/ImageProcessing.dir/src/path.cpp.o: CMakeFiles/ImageProcessing.dir/flags.make
+CMakeFiles/ImageProcessing.dir/src/path.cpp.o: /home/hayashi/SkillSemi2024/ss2407/src/path.cpp
+CMakeFiles/ImageProcessing.dir/src/path.cpp.o: CMakeFiles/ImageProcessing.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/hayashi/SkillSemi2024/ss2407/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/ImageProcessing.dir/src/path.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/ImageProcessing.dir/src/path.cpp.o -MF CMakeFiles/ImageProcessing.dir/src/path.cpp.o.d -o CMakeFiles/ImageProcessing.dir/src/path.cpp.o -c /home/hayashi/SkillSemi2024/ss2407/src/path.cpp
 
-CMakeFiles/ImageProcessing.dir/path.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/ImageProcessing.dir/path.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/hayashi/SkillSemi2024/ss2407/path.cpp > CMakeFiles/ImageProcessing.dir/path.cpp.i
+CMakeFiles/ImageProcessing.dir/src/path.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/ImageProcessing.dir/src/path.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/hayashi/SkillSemi2024/ss2407/src/path.cpp > CMakeFiles/ImageProcessing.dir/src/path.cpp.i
 
-CMakeFiles/ImageProcessing.dir/path.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/ImageProcessing.dir/path.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/hayashi/SkillSemi2024/ss2407/path.cpp -o CMakeFiles/ImageProcessing.dir/path.cpp.s
+CMakeFiles/ImageProcessing.dir/src/path.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/ImageProcessing.dir/src/path.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/hayashi/SkillSemi2024/ss2407/src/path.cpp -o CMakeFiles/ImageProcessing.dir/src/path.cpp.s
 
-CMakeFiles/ImageProcessing.dir/tricubic_processing.cpp.o: CMakeFiles/ImageProcessing.dir/flags.make
-CMakeFiles/ImageProcessing.dir/tricubic_processing.cpp.o: /home/hayashi/SkillSemi2024/ss2407/tricubic_processing.cpp
-CMakeFiles/ImageProcessing.dir/tricubic_processing.cpp.o: CMakeFiles/ImageProcessing.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/hayashi/SkillSemi2024/ss2407/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/ImageProcessing.dir/tricubic_processing.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/ImageProcessing.dir/tricubic_processing.cpp.o -MF CMakeFiles/ImageProcessing.dir/tricubic_processing.cpp.o.d -o CMakeFiles/ImageProcessing.dir/tricubic_processing.cpp.o -c /home/hayashi/SkillSemi2024/ss2407/tricubic_processing.cpp
+CMakeFiles/ImageProcessing.dir/src/tricubic_processing.cpp.o: CMakeFiles/ImageProcessing.dir/flags.make
+CMakeFiles/ImageProcessing.dir/src/tricubic_processing.cpp.o: /home/hayashi/SkillSemi2024/ss2407/src/tricubic_processing.cpp
+CMakeFiles/ImageProcessing.dir/src/tricubic_processing.cpp.o: CMakeFiles/ImageProcessing.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/hayashi/SkillSemi2024/ss2407/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/ImageProcessing.dir/src/tricubic_processing.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/ImageProcessing.dir/src/tricubic_processing.cpp.o -MF CMakeFiles/ImageProcessing.dir/src/tricubic_processing.cpp.o.d -o CMakeFiles/ImageProcessing.dir/src/tricubic_processing.cpp.o -c /home/hayashi/SkillSemi2024/ss2407/src/tricubic_processing.cpp
 
-CMakeFiles/ImageProcessing.dir/tricubic_processing.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/ImageProcessing.dir/tricubic_processing.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/hayashi/SkillSemi2024/ss2407/tricubic_processing.cpp > CMakeFiles/ImageProcessing.dir/tricubic_processing.cpp.i
+CMakeFiles/ImageProcessing.dir/src/tricubic_processing.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/ImageProcessing.dir/src/tricubic_processing.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/hayashi/SkillSemi2024/ss2407/src/tricubic_processing.cpp > CMakeFiles/ImageProcessing.dir/src/tricubic_processing.cpp.i
 
-CMakeFiles/ImageProcessing.dir/tricubic_processing.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/ImageProcessing.dir/tricubic_processing.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/hayashi/SkillSemi2024/ss2407/tricubic_processing.cpp -o CMakeFiles/ImageProcessing.dir/tricubic_processing.cpp.s
+CMakeFiles/ImageProcessing.dir/src/tricubic_processing.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/ImageProcessing.dir/src/tricubic_processing.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/hayashi/SkillSemi2024/ss2407/src/tricubic_processing.cpp -o CMakeFiles/ImageProcessing.dir/src/tricubic_processing.cpp.s
 
-CMakeFiles/ImageProcessing.dir/tricubic_interpolation.cpp.o: CMakeFiles/ImageProcessing.dir/flags.make
-CMakeFiles/ImageProcessing.dir/tricubic_interpolation.cpp.o: /home/hayashi/SkillSemi2024/ss2407/tricubic_interpolation.cpp
-CMakeFiles/ImageProcessing.dir/tricubic_interpolation.cpp.o: CMakeFiles/ImageProcessing.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/hayashi/SkillSemi2024/ss2407/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/ImageProcessing.dir/tricubic_interpolation.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/ImageProcessing.dir/tricubic_interpolation.cpp.o -MF CMakeFiles/ImageProcessing.dir/tricubic_interpolation.cpp.o.d -o CMakeFiles/ImageProcessing.dir/tricubic_interpolation.cpp.o -c /home/hayashi/SkillSemi2024/ss2407/tricubic_interpolation.cpp
+CMakeFiles/ImageProcessing.dir/src/tricubic_interpolation.cpp.o: CMakeFiles/ImageProcessing.dir/flags.make
+CMakeFiles/ImageProcessing.dir/src/tricubic_interpolation.cpp.o: /home/hayashi/SkillSemi2024/ss2407/src/tricubic_interpolation.cpp
+CMakeFiles/ImageProcessing.dir/src/tricubic_interpolation.cpp.o: CMakeFiles/ImageProcessing.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/hayashi/SkillSemi2024/ss2407/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/ImageProcessing.dir/src/tricubic_interpolation.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/ImageProcessing.dir/src/tricubic_interpolation.cpp.o -MF CMakeFiles/ImageProcessing.dir/src/tricubic_interpolation.cpp.o.d -o CMakeFiles/ImageProcessing.dir/src/tricubic_interpolation.cpp.o -c /home/hayashi/SkillSemi2024/ss2407/src/tricubic_interpolation.cpp
 
-CMakeFiles/ImageProcessing.dir/tricubic_interpolation.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/ImageProcessing.dir/tricubic_interpolation.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/hayashi/SkillSemi2024/ss2407/tricubic_interpolation.cpp > CMakeFiles/ImageProcessing.dir/tricubic_interpolation.cpp.i
+CMakeFiles/ImageProcessing.dir/src/tricubic_interpolation.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/ImageProcessing.dir/src/tricubic_interpolation.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/hayashi/SkillSemi2024/ss2407/src/tricubic_interpolation.cpp > CMakeFiles/ImageProcessing.dir/src/tricubic_interpolation.cpp.i
 
-CMakeFiles/ImageProcessing.dir/tricubic_interpolation.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/ImageProcessing.dir/tricubic_interpolation.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/hayashi/SkillSemi2024/ss2407/tricubic_interpolation.cpp -o CMakeFiles/ImageProcessing.dir/tricubic_interpolation.cpp.s
+CMakeFiles/ImageProcessing.dir/src/tricubic_interpolation.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/ImageProcessing.dir/src/tricubic_interpolation.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/hayashi/SkillSemi2024/ss2407/src/tricubic_interpolation.cpp -o CMakeFiles/ImageProcessing.dir/src/tricubic_interpolation.cpp.s
 
 # Object files for target ImageProcessing
 ImageProcessing_OBJECTS = \
-"CMakeFiles/ImageProcessing.dir/main.cpp.o" \
-"CMakeFiles/ImageProcessing.dir/path.cpp.o" \
-"CMakeFiles/ImageProcessing.dir/tricubic_processing.cpp.o" \
-"CMakeFiles/ImageProcessing.dir/tricubic_interpolation.cpp.o"
+"CMakeFiles/ImageProcessing.dir/src/main.cpp.o" \
+"CMakeFiles/ImageProcessing.dir/src/path.cpp.o" \
+"CMakeFiles/ImageProcessing.dir/src/tricubic_processing.cpp.o" \
+"CMakeFiles/ImageProcessing.dir/src/tricubic_interpolation.cpp.o"
 
 # External object files for target ImageProcessing
 ImageProcessing_EXTERNAL_OBJECTS =
 
-ImageProcessing: CMakeFiles/ImageProcessing.dir/main.cpp.o
-ImageProcessing: CMakeFiles/ImageProcessing.dir/path.cpp.o
-ImageProcessing: CMakeFiles/ImageProcessing.dir/tricubic_processing.cpp.o
-ImageProcessing: CMakeFiles/ImageProcessing.dir/tricubic_interpolation.cpp.o
+ImageProcessing: CMakeFiles/ImageProcessing.dir/src/main.cpp.o
+ImageProcessing: CMakeFiles/ImageProcessing.dir/src/path.cpp.o
+ImageProcessing: CMakeFiles/ImageProcessing.dir/src/tricubic_processing.cpp.o
+ImageProcessing: CMakeFiles/ImageProcessing.dir/src/tricubic_interpolation.cpp.o
 ImageProcessing: CMakeFiles/ImageProcessing.dir/build.make
 ImageProcessing: CMakeFiles/ImageProcessing.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/hayashi/SkillSemi2024/ss2407/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable ImageProcessing"

@@ -57,10 +57,10 @@ RM = /opt/cmake-3.28/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/hayashi/SkillSemi2024/ss2407
+CMAKE_SOURCE_DIR = /home/hayashi/SkillSemi2024/ss2406
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/hayashi/SkillSemi2024/ss2407/build
+CMAKE_BINARY_DIR = /home/hayashi/SkillSemi2024/ss2406/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,9 +87,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/hayashi/SkillSemi2024/ss2407/build/CMakeFiles /home/hayashi/SkillSemi2024/ss2407/build//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/hayashi/SkillSemi2024/ss2406/build/CMakeFiles /home/hayashi/SkillSemi2024/ss2406/build//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/hayashi/SkillSemi2024/ss2407/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/hayashi/SkillSemi2024/ss2406/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -128,6 +128,30 @@ ImageProcessing: cmake_check_build_system
 ImageProcessing/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ImageProcessing.dir/build.make CMakeFiles/ImageProcessing.dir/build
 .PHONY : ImageProcessing/fast
+
+src/image_processing.o: src/image_processing.cpp.o
+.PHONY : src/image_processing.o
+
+# target to build an object file
+src/image_processing.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ImageProcessing.dir/build.make CMakeFiles/ImageProcessing.dir/src/image_processing.cpp.o
+.PHONY : src/image_processing.cpp.o
+
+src/image_processing.i: src/image_processing.cpp.i
+.PHONY : src/image_processing.i
+
+# target to preprocess a source file
+src/image_processing.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ImageProcessing.dir/build.make CMakeFiles/ImageProcessing.dir/src/image_processing.cpp.i
+.PHONY : src/image_processing.cpp.i
+
+src/image_processing.s: src/image_processing.cpp.s
+.PHONY : src/image_processing.s
+
+# target to generate assembly for a file
+src/image_processing.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ImageProcessing.dir/build.make CMakeFiles/ImageProcessing.dir/src/image_processing.cpp.s
+.PHONY : src/image_processing.cpp.s
 
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
@@ -177,54 +201,6 @@ src/path.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ImageProcessing.dir/build.make CMakeFiles/ImageProcessing.dir/src/path.cpp.s
 .PHONY : src/path.cpp.s
 
-src/tricubic_interpolation.o: src/tricubic_interpolation.cpp.o
-.PHONY : src/tricubic_interpolation.o
-
-# target to build an object file
-src/tricubic_interpolation.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ImageProcessing.dir/build.make CMakeFiles/ImageProcessing.dir/src/tricubic_interpolation.cpp.o
-.PHONY : src/tricubic_interpolation.cpp.o
-
-src/tricubic_interpolation.i: src/tricubic_interpolation.cpp.i
-.PHONY : src/tricubic_interpolation.i
-
-# target to preprocess a source file
-src/tricubic_interpolation.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ImageProcessing.dir/build.make CMakeFiles/ImageProcessing.dir/src/tricubic_interpolation.cpp.i
-.PHONY : src/tricubic_interpolation.cpp.i
-
-src/tricubic_interpolation.s: src/tricubic_interpolation.cpp.s
-.PHONY : src/tricubic_interpolation.s
-
-# target to generate assembly for a file
-src/tricubic_interpolation.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ImageProcessing.dir/build.make CMakeFiles/ImageProcessing.dir/src/tricubic_interpolation.cpp.s
-.PHONY : src/tricubic_interpolation.cpp.s
-
-src/tricubic_processing.o: src/tricubic_processing.cpp.o
-.PHONY : src/tricubic_processing.o
-
-# target to build an object file
-src/tricubic_processing.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ImageProcessing.dir/build.make CMakeFiles/ImageProcessing.dir/src/tricubic_processing.cpp.o
-.PHONY : src/tricubic_processing.cpp.o
-
-src/tricubic_processing.i: src/tricubic_processing.cpp.i
-.PHONY : src/tricubic_processing.i
-
-# target to preprocess a source file
-src/tricubic_processing.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ImageProcessing.dir/build.make CMakeFiles/ImageProcessing.dir/src/tricubic_processing.cpp.i
-.PHONY : src/tricubic_processing.cpp.i
-
-src/tricubic_processing.s: src/tricubic_processing.cpp.s
-.PHONY : src/tricubic_processing.s
-
-# target to generate assembly for a file
-src/tricubic_processing.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ImageProcessing.dir/build.make CMakeFiles/ImageProcessing.dir/src/tricubic_processing.cpp.s
-.PHONY : src/tricubic_processing.cpp.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -234,18 +210,15 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... ImageProcessing"
+	@echo "... src/image_processing.o"
+	@echo "... src/image_processing.i"
+	@echo "... src/image_processing.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
 	@echo "... src/path.o"
 	@echo "... src/path.i"
 	@echo "... src/path.s"
-	@echo "... src/tricubic_interpolation.o"
-	@echo "... src/tricubic_interpolation.i"
-	@echo "... src/tricubic_interpolation.s"
-	@echo "... src/tricubic_processing.o"
-	@echo "... src/tricubic_processing.i"
-	@echo "... src/tricubic_processing.s"
 .PHONY : help
 
 

@@ -1,12 +1,10 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/ImageProcessing.dir/src/image_processing.cpp.o"
+  "CMakeFiles/ImageProcessing.dir/src/image_processing.cpp.o.d"
   "CMakeFiles/ImageProcessing.dir/src/main.cpp.o"
   "CMakeFiles/ImageProcessing.dir/src/main.cpp.o.d"
   "CMakeFiles/ImageProcessing.dir/src/path.cpp.o"
   "CMakeFiles/ImageProcessing.dir/src/path.cpp.o.d"
-  "CMakeFiles/ImageProcessing.dir/src/tricubic_interpolation.cpp.o"
-  "CMakeFiles/ImageProcessing.dir/src/tricubic_interpolation.cpp.o.d"
-  "CMakeFiles/ImageProcessing.dir/src/tricubic_processing.cpp.o"
-  "CMakeFiles/ImageProcessing.dir/src/tricubic_processing.cpp.o.d"
   "ImageProcessing"
   "ImageProcessing.pdb"
 )

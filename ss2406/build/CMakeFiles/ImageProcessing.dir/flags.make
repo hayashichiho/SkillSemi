@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/hayashi/SkillSemi2024/ss2407/include
+CXX_INCLUDES = -I/home/hayashi/SkillSemi2024/ss2406/include
 
 CXX_FLAGS = -std=gnu++17
 

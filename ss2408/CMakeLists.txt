@@ -1,31 +1,32 @@
-# CMakeLists.txt
 cmake_minimum_required(VERSION 3.10)
 project(MIPGenerator)
 
-# C++17の設定
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# コンパイラ最適化フラグの設定
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -DNDEBUG")
-set(CMAKE_BUILD_TYPE Release)
+# OpenMPを使用する場合
+find_package(OpenMP)
+if(OpenMP_CXX_FOUND)
+    add_compile_options(-fopenmp)
+endif()
 
-# OpenMPの検索
-find_package(OpenMP REQUIRED)
-
-# ソースファイルの設定
+# ソースファイル一覧
 set(SOURCES
-    main.cpp
-    mip.cpp
-    path.cpp
-    window_parameters.cpp
+    src/main.cpp
+    src/ProcessingInfo.cpp
+    src/ImageInfo.cpp
+    src/ImageInfo2D.cpp
+    src/ImageInfo3D.cpp
+    src/Coordinate3D.cpp
+    src/ProcessingInfoParser.cpp
+    src/MIPGenerator.cpp
+    src/Outputs.cpp
 )
 
-# 実行ファイルの設定
+include_directories(include)
+
 add_executable(MIPGenerator ${SOURCES})
 
-# OpenMPのリンク
-target_link_libraries(MIPGenerator
-    PRIVATE
-        OpenMP::OpenMP_CXX
-)
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(MIPGenerator OpenMP::OpenMP_CXX)
+endif()
