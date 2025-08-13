@@ -1,20 +1,31 @@
-# 多言語連携・仮想マウスプログラム（ソケット通信＋センサー＋カメラ＋顔認識）
+# 多言語連携・顔認識アプリケーション（ss2411）
 
-このプロジェクトは、C#・C++・Pythonなど複数言語を連携し、画面上で顔検出，矩形表示を行うアプリケーションです。
-各言語間はソケット通信でデータをやり取りし、GUI上でリアルタイムに表示可能です。
+このプロジェクトは、**C#・C++・Python**の複数言語を連携し、カメラ映像の取得・顔検出・矩形表示をリアルタイムで行うアプリケーションです。
+各言語間はソケット通信でデータをやり取りし、C#のGUI上で表示・操作できます。
 
 ---
 
-## 実装内容
+## 使用技術・主なライブラリ
 
-- C#フォームアプリによるGUI・仮想マウス・センサー・カメラ連携
-- C++/Pythonによるカメラ映像取得・画像処理
-- **Python（receiveCamera.py）による顔認識・矩形描画（OpenFace使用）**
-- ソケット通信による多言語間データ連携
-- シリアル通信によるセンサー値取得
-- カメラ映像のリアルタイム表示
-- 仮想マウス描画・計測データ管理
-- 計測データの保存・読み込み
+- **使用言語**
+  - C#（.NET Framework 4.7.2以上、Windows Forms）
+  - C++（OpenCV利用、カメラ映像取得・画像処理）
+  - Python（OpenCV, dlib, socket通信、顔認識・矩形描画）
+
+- **主なライブラリ・技術**
+  - C#
+    - OpenCvSharp（C#用OpenCVラッパー、カメラ映像の取得・画像処理）
+    - System.IO.Ports（シリアル通信）
+    - System.Windows.Forms（GUI）
+    - System.Net.Sockets（ソケット通信）
+  - C++
+    - OpenCV（画像処理・カメラ映像取得）
+    - CMake（ビルド管理）
+  - Python
+    - OpenCV (`cv2`)
+    - dlib（顔検出・ランドマーク抽出）
+    - socket（通信）
+    - numpy
 
 ---
 
@@ -43,34 +54,29 @@ ss2411/
 
 ---
 
-## 各ファイルの説明
+## 主な機能
 
-- `cameraApp.cs` / `Form1.cs`: C#によるGUI・仮想マウス・センサー・カメラ連携処理
-- `getCamera.cpp` / `opencv.cpp`: C++によるカメラ映像取得・画像処理
-- `receiveCamera.py`: **Pythonによるカメラ映像受信・顔認識・矩形描画（OpenFace使用）**
-    - 顔検出し、顔部分に矩形を描画してC#側に送信
-- `Program.cs`: C#アプリケーションのエントリポイント
-- `CMakeLists.txt`, `ss2411-1.vcxproj`: C++ビルド設定
-- `cameraApp.csproj`, `connectDifferentLanguage.csproj`: C#プロジェクトファイル
+- C#フォームアプリによるGUI・仮想マウス・センサー・カメラ連携
+- C++/Pythonによるカメラ映像取得・画像処理
+- Python（receiveCamera.py）による顔認識・矩形描画（dlib, OpenCV使用）
+- ソケット通信による多言語間データ連携
+- カメラ映像のリアルタイム表示
 
 ---
 
-## 使用方法
+## 実行方法
 
-1. 各言語のプロジェクトをビルド（C#はVisual Studio、C++はCMake/VS、Pythonは必要なライブラリをインストール）
-2. Python側で `receiveCamera.py` を起動（OpenFaceのshape_predictor_68_face_landmarks.datが必要）
+1. 各言語のプロジェクトをビルド
+   - C#はVisual Studioで`cameraApp.csproj`または`connectDifferentLanguage.csproj`を開いてビルド
+   - C++は`CMakeLists.txt`または`ss2411-1.vcxproj`でビルド
+   - Pythonは必要なライブラリ（`opencv-python`, `dlib`, `numpy`など）をインストール
+     ```sh
+     pip install opencv-python dlib numpy
+     ```
+2. Python側で `receiveCamera.py` を起動（`shape_predictor_68_face_landmarks.dat`が必要）
 3. C++/Python側でカメラ映像取得サーバを起動
 4. C#フォームアプリ（`cameraApp.csproj`）を起動
-5. ソケット通信でカメラ映像・センサー値・顔認識結果（矩形付き画像）を受信し、GUI上で仮想マウス描画・計測を操作
-6. 計測データの保存・読み込みも可能
-
----
-
-## 顔認識・矩形表示について
-
-- `receiveCamera.py` でOpenFaceの `AlignDlib` を使い、顔部分を検出
-- 検出した顔領域に `cv2.rectangle` で矩形を描画
-- 矩形付き画像をC#側に送信し、GUI上で表示
+5. ソケット通信でカメラ映像・顔認識結果（矩形付き画像）を受信し、GUI上で表示
 
 ---
 
@@ -78,12 +84,12 @@ ss2411/
 
 - .NET Framework 4.7.2 以上が必要です（C#側）
 - OpenCvSharpやシリアル通信関連のDLLが必要な場合は、事前にインストールしてください
-- C++/Python側はOpenCV・OpenFace等のライブラリが必要です
-- `shape_predictor_68_face_landmarks.dat` ファイルが必要です（OpenFace用）
+- C++/Python側はOpenCV・dlib等のライブラリが必要です
+- `shape_predictor_68_face_landmarks.dat` ファイルが必要です（dlib用）
 - ソケット通信のポート番号やIPアドレスは環境に合わせて設定してください
 
 ---
 
 ## ライセンス
 
-このプロジェクトは [MITライセンス](https://opensource.org/licenses/MIT) の下で公開されています．
+このプロジェクトは [MITライセンス](https://opensource.org/licenses/MIT) の下で公

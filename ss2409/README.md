@@ -1,4 +1,4 @@
-# arucoマーカを用いた距離計測プログラム
+# arucoマーカを用いた距離計測アプリケーション
 
 このプロジェクトは，arucoマーカーを活用し，GUI上で計測・キャリブレーション・データ管理を行うプログラムです．
 
@@ -11,6 +11,28 @@
 - 計測データの保存・読み込み
 - GUIによる操作（フォームアプリケーション）
 - 設定ファイル（App.config）によるパラメータ管理
+
+---
+
+## 使用技術・必要なライブラリ
+
+- **言語・環境**:
+  - C# (.NET Framework 4.7.2 以上)
+  - Windows Forms（GUIアプリケーション）
+- **画像処理・マーカー検出**:
+  - OpenCV（C#ラッパー：OpenCvSharpなど）
+  - aruco（OpenCVのマーカー検出モジュール）
+
+### 必要なライブラリ・インストール方法
+
+- **OpenCvSharp**（C#用OpenCVラッパー）
+  - NuGetでインストール
+    ```
+    Install-Package OpenCvSharp4
+    Install-Package OpenCvSharp4.Windows
+    ```
+- **.NET Framework 4.7.2**
+  - Visual Studioのプロジェクト設定で指定
 
 ---
 
@@ -57,9 +79,9 @@ ss2409/
 ## 使用方法
 
 1. Visual Studioでプロジェクト（`ss2409-01.csproj`）を開く
-2. 必要に応じてNuGetでOpenCVや関連ライブラリをインストール
-3. `bin/Debug/` フォルダにビルドし，実行ファイルを起動
-4. GUI上で画像ファイルを選択し，キャリブレーションや計測を実行
+2. NuGetでOpenCvSharpなど必要なライブラリをインストール
+3. `bin/Debug/` フォルダにビルドし、実行ファイルを起動
+4. GUI上で画像ファイルを選択し、キャリブレーションや計測を実行
 5. 計測結果やキャリブレーションデータは保存・読み込み可能
 
 ---
@@ -67,11 +89,11 @@ ss2409/
 ## 注意事項
 
 - .NET Framework 4.7.2 以上が必要です
-- OpenCVやaruco関連のDLLが必要な場合は，事前にインストールしてください
+- OpenCvSharpやaruco関連のDLLが必要な場合は、事前にインストールしてください
 - 計測やキャリブレーションの手順はGUI上の説明やマニュアルを参照してください
 
 ---
 
 ## ライセンス
 
-このプロジェクトは [MITライセンス](https://opensource.org/licenses/MIT) の下で公
+このプロジェクトは [MITライセンス](https://opensource.org/licenses/MIT) の下で公開されています．

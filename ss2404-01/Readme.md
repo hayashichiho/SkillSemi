@@ -1,4 +1,4 @@
-# 画像分類（ResNet18）サンプルコード
+# 画像分類（ResNet18）
 
 このプロジェクトは，2次元画像をResNet18でクラス分類するPythonサンプルコードです．
 学習・推論・ROC解析まで一連の流れを実装しています．
@@ -118,4 +118,4 @@ pip install numpy pandas torch torchvision scikit-learn matplotlib
 
 ## ライセンス
 
-このプロジェクトは [MITライセンス](https://opensource.org/licenses/MIT) の下で公開
+このプロジェクトは [MITライセンス](https://opensource.org/licenses/MIT) の下で公開されています．

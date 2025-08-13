@@ -91,4 +91,4 @@ pip install numpy pydicom
 
 ## ライセンス
 
-このプロジェクトは [MITライセンス](https://opensource.org/licenses/MIT) の下で
+このプロジェクトは [MITライセンス](https://opensource.org/licenses/MIT) の下で公開されています．

@@ -1,4 +1,4 @@
-# 仮想マウスプログラム（センサー＋カメラ連携）
+# 仮想マウスアプリケーション（センサー＋カメラ連携）
 
 このプロジェクトは，センサーとカメラ映像を組み合わせて，仮想マウスとして画面上で描画を行うC#フォームアプリケーションです．
 シリアル通信によるセンサー値取得，カメラ映像の表示，リアルタイム描画，計測データの管理などをGUI上で操作できます．
@@ -14,6 +14,33 @@
 - FPS・Hzなどのパフォーマンス指標の表示
 - 計測データの保存・読み込み
 - GUIによる操作（フォームアプリケーション）
+
+---
+
+## 使用技術・必要なライブラリ
+
+- **言語・環境**
+  - C# (.NET Framework 4.7.2 以上)
+  - Windows Forms（GUIアプリケーション）
+
+- **画像処理・カメラ連携**
+  - [OpenCvSharp](https://github.com/shimat/opencvsharp)（C#用OpenCVラッパー）
+    - NuGetでインストール
+      ```
+      Install-Package OpenCvSharp4
+      Install-Package OpenCvSharp4.Windows
+      ```
+
+- **センサー連携・シリアル通信**
+  - System.IO.Ports（.NET標準のシリアル通信クラス）
+
+- **グラフ描画**
+  - System.Windows.Forms.DataVisualization.Charting（標準Chartコントロール）
+
+- **その他**
+  - System.Drawing（描画・画像合成）
+  - System.Threading（マルチスレッド処理）
+  - System.Diagnostics（パフォーマンス計測）
 
 ---
 
@@ -46,10 +73,10 @@ ss2410/
 ## 使用方法
 
 1. Visual Studioでプロジェクト（`ss2410.csproj`）を開く
-2. 必要に応じてNuGetでOpenCvSharpや関連ライブラリをインストール
-3. センサー（例：Arduino等）をPCに接続し，COMポート番号を`Form1.cs`内で設定
-4. `bin/Debug/` フォルダにビルドし，実行ファイルを起動
-5. GUI上でカメラ映像・センサー値・仮想マウス描画・計測を操作
+2. NuGetでOpenCvSharpなど必要なライブラリをインストール
+3. センサー（例：Arduino等）をPCに接続し、COMポート番号を`Form1.cs`で設定
+4. ビルドして実行
+5. GUI上でカメラ映像・センサー値・描画・グラフ表示を操作
 
 ---
 

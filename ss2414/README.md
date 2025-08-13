@@ -18,6 +18,24 @@
 
 ---
 
+## 使用技術・主なライブラリ
+
+- **使用言語**: Python 3.x
+- **主なライブラリ**:
+    - torch, torchvision（深層学習・ResNet18モデル）
+    - numpy（数値計算・データ処理）
+    - opencv-python（画像処理・カメラ画像取得）
+    - socket（通信：PC⇔ロボットカー間のデータ送受信）
+    - PIL（画像保存・表示、必要に応じて）
+    - その他標準ライブラリ（os, time, threading など）
+
+インストール例：
+```sh
+pip install torch torchvision numpy opencv-python pillow
+```
+
+---
+
 ## ディレクトリ構成
 
 ```
@@ -28,6 +46,7 @@ ss2414/
 ├── teaching.py     # 手動操縦・データ収集（画像＋操作情報の記録）
 ├── receiver.py     # ソケット通信で画像・制御信号受信
 ├── sender.py       # ソケット通信で画像・制御信号送信
+├── S__132349955.jpg# ロボットカー写真
 ├── README.md       # この説明ファイル
 ```
 
